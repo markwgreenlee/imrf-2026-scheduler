@@ -157,6 +157,13 @@ Each entry in `assets/imrf-data.json` has: `id`, `kind` (`keynote` / `symposium_
 
 ## Version History
 
+**v1.0.2** (2026-06-22)
+- Fixed more abstract-extraction bugs in the symposium parser:
+  - Symposium introduction entries: organizer names that wrap across lines no longer bleed into the abstract, and a wrapped title is no longer mistaken for the organizer list
+  - Symposium introductions now list the organizers in the Authors field (searchable by name) under an "Organizers" label, and are badged "Symposium" (vs "Symposium Talk" for the individual talks)
+  - `* speaker` legends (with a space) no longer appear at the start of a few symposium-talk abstracts
+- Regenerated `imrf-data.json`; all 296 entries pass validation
+
 **v1.0.1** (2026-06-22)
 - Added Umami analytics to the web version (privacy-friendly, cookie-free; web only, no impact on native)
 - Fixed parser bugs in the abstract extraction:

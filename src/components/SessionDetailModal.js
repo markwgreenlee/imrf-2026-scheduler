@@ -98,7 +98,11 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
 
           {authorList.length > 0 ? (
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>Authors</Text>
+              <Text style={styles.sectionLabel}>
+                {session.kind === 'symposium_overview'
+                  ? (authorList.length > 1 ? 'Organizers' : 'Organizer')
+                  : 'Authors'}
+              </Text>
               <Text style={styles.authors}>
                 {authorList.map((name, i) => (
                   <Text key={i}>
@@ -110,15 +114,11 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
                   </Text>
                 ))}
               </Text>
-            </View>
-          ) : null}
-
-          {session.organizer ? (
-            <View style={styles.section}>
-              <Text style={styles.sectionLabel}>
-                {session.organizer.includes(',') ? 'Organizers' : 'Organizer'}
-              </Text>
-              <Text style={styles.authors}>{session.organizer}</Text>
+              {session.kind === 'symposium_overview' ? (
+                <Text style={styles.organizerNote}>
+                  Symposium introduction — presented by the organizers
+                </Text>
+              ) : null}
             </View>
           ) : null}
 
@@ -272,6 +272,12 @@ const styles = StyleSheet.create({
     fontSize: 9,
     lineHeight: 14,
     color: '#1a5fd1',
+  },
+  organizerNote: {
+    fontSize: 12,
+    color: '#888',
+    fontStyle: 'italic',
+    marginTop: 4,
   },
   affiliations: {
     fontSize: 12,

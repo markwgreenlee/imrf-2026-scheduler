@@ -84,6 +84,16 @@ def clean_lines(block: str):
     return [ln for ln in block.splitlines() if not NOISE_RE.search(ln)]
 
 
+# footnote legend marking a speaker/organizer/presenter, with or without a space
+# and singular or plural: "*speaker", "* speaker", "*organizers", ...
+LEGEND_RE = re.compile(r"\*\s*(speakers?|organizers?|presenters?)", re.IGNORECASE)
+
+# lowercase words allowed inside a person's name (so a name-list line isn't
+# mistaken for prose). Everything else lowercase marks a title/abstract line.
+NAME_PARTICLES = {"de", "van", "von", "di", "della", "del", "dos", "du", "da",
+                  "la", "le", "den", "der", "ter", "bin", "al", "el", "y", "i"}
+
+
 def is_author_line(line: str) -> bool:
     # an affiliation ref is a paren immediately followed by a digit, e.g. (1) or (1,2)
     return bool(re.search(r"\(\d", line)) and not is_affiliation_line(line)
@@ -91,6 +101,22 @@ def is_author_line(line: str) -> bool:
 
 def is_affiliation_line(line: str) -> bool:
     return bool(re.match(r"^\s*\d+\s*[-–]\s*\S", line))
+
+
+def is_name_list_line(line: str) -> bool:
+    """True if the line is a list of person names (e.g. an organizer line):
+    every alphabetic word is capitalized or a known name particle. Title and
+    abstract prose contain lowercase function words and fail this test."""
+    line = LEGEND_RE.sub("", line).strip()
+    words = re.findall(r"[A-Za-zÀ-ÿ]+", line)
+    if not words:
+        return False
+    return all(w[0].isupper() or w.lower() in NAME_PARTICLES for w in words)
+
+
+def split_names(text: str):
+    """Split a comma-separated organizer/author string into individual names."""
+    return [norm(n) for n in text.split(",") if norm(n)]
 
 
 def parse_author_line(line: str):
@@ -138,7 +164,9 @@ def split_authors_affs_abstract(lines, start):
     cur = -1              # index of the affiliation currently being built
     while i < len(lines):
         ln = lines[i].strip()
-        if ln in ("*speaker", "*organizer", "*presenter"):
+        # legend lines render with or without a space: "*speaker" or "* speaker",
+        # singular or plural. Skip them wherever they sit in the block.
+        if LEGEND_RE.fullmatch(ln):
             i += 1
             continue
         m = re.match(r"^(\d+)\s*[-–]\s*(.*)$", ln)
@@ -163,9 +191,12 @@ def split_authors_affs_abstract(lines, start):
             break
     # a '*speaker/*organizer/*presenter' footnote can render adjacent to an
     # affiliation's country (e.g. "(Canada\n*speaker)"); strip it from the text.
-    aff_lines = [norm(re.sub(r"\s*\*(speaker|organizer|presenter)\b", "", a))
+    aff_lines = [norm(re.sub(r"\s*\*\s*(speakers?|organizers?|presenters?)\b", "", a))
                  for a in aff_lines]
     abstract = norm(" ".join(lines[i:]))
+    # defense in depth: a legend that slipped to the head of the abstract
+    abstract = LEGEND_RE.sub("", abstract, count=1).strip() if \
+        LEGEND_RE.match(abstract) else abstract
     return " ".join(author_lines), aff_lines, abstract
 
 
@@ -297,27 +328,36 @@ def parse_symposia(section: str):
         body = clean_lines(blocks[i + 1])
         text = "\n".join(body)
         head, sep, rest = text.partition("\nTalk:")
-        # --- overview: title, organizer line, overview paragraph ---
+        # --- overview: title, organizer block, overview paragraph ---
+        # Structure: <title lines> <organizer lines> "*organizer(s)" <overview>.
+        # The legend is the reliable anchor: organizers sit directly above it and
+        # the overview directly below. Title vs organizer is split by name-list
+        # detection (organizer lines are all capitalized names; titles contain
+        # lowercase prose), since both the title and the organizer list can wrap.
         hlines = [l for l in head.splitlines() if l.strip()
                   and not re.search(r"JUNE \d+|ROOM|HALL", l)]
-        title_lines, org_line, overview, seen_org = [], "", [], False
-        for l in hlines:
-            if re.match(r"^\s*\*organizer", l):
-                seen_org = True
-                continue
-            if not seen_org and not org_line and title_lines and (
-                    "," in l or l.rstrip().endswith("*")):
-                org_line = l
-            elif org_line:
-                overview.append(l)
-            else:
-                title_lines.append(l)
-        sym_title = norm(" ".join(title_lines))
-        org_clean = norm(org_line.replace("*", ""))
+        leg = next((j for j, l in enumerate(hlines)
+                    if re.match(r"^\s*\*\s*organizer", l, re.IGNORECASE)), None)
+        if leg is not None:
+            pre, overview = hlines[:leg], hlines[leg + 1:]
+        else:  # fallback: no legend — first name-list line starts the organizers
+            k0 = next((j for j, l in enumerate(hlines)
+                       if j > 0 and is_name_list_line(l)), len(hlines))
+            pre, overview = hlines[:k0], hlines[k0:]
+            # pull trailing name-list lines back out of the overview into pre
+            while overview and is_name_list_line(overview[0]):
+                pre.append(overview.pop(0))
+        k = len(pre)
+        while k > 0 and is_name_list_line(pre[k - 1]):
+            k -= 1
+        sym_title = norm(" ".join(pre[:k]))
+        org_str = norm(LEGEND_RE.sub("", " ".join(pre[k:])).replace("*", ""))
+        organizers = split_names(org_str)
         entries.append({
             "id": f"SYM{num}", "kind": "symposium_overview", "talk_number": None,
-            "time": start, "title": sym_title, "authors": [], "author_numbers": [],
-            "affiliations": "", "presenter": "", "organizer": org_clean, "bio": "",
+            "time": start, "title": sym_title,
+            "authors": organizers, "author_numbers": [""] * len(organizers),
+            "affiliations": "", "presenter": "", "organizer": org_str, "bio": "",
             "abstract": norm(" ".join(overview)), "day": day, "date": date, "room": room,
             "session_title": sym_title, "session_kind": "Symposium",
             "session_start": start, "session_end": end,

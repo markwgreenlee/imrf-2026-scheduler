@@ -13,7 +13,7 @@ const SessionCard = ({ session, isSelected }) => {
 
   const KIND_LABELS = {
     poster: 'Poster',
-    symposium: 'Symposium',
+    symposium: 'Symposium Talk',
     symposium_overview: 'Symposium',
     keynote: 'Keynote',
     workshop: 'Workshop',
