@@ -113,6 +113,31 @@ Copy the VSS app into `imrf-scheduler/`, then:
 
 Deep UI logic, navigation, search, and export are reused as-is.
 
+## App icon / logo
+
+The IMRF logo (brain hemisphere + molecular-network graphic, provided by the
+user, transparent-background PNG) replaces the VSS icon everywhere. Source of
+truth preserved at `assets/imrf-logo-source.png` (258×258).
+
+Because the source is transparent and iOS renders transparent apple-touch-icons
+on black, all icons are **flattened onto a white background** and upscaled with
+Lanczos resampling. Generated set (re-creatable via `scripts/make_icons.py`):
+
+| file | size | use |
+|---|---|---|
+| `assets/icon.png` | 1024² | Expo app icon + web favicon (`app.json` `icon`/`favicon`) |
+| `assets/adaptive-icon.png` | 1024² | Android adaptive icon foreground |
+| `assets/favicon.png` | 48² | small favicon |
+| `public/icons/icon-192.png` | 192² | PWA / Android home-screen icon |
+| `public/icons/icon-512.png` | 512² | PWA / Android splash + install |
+| `public/icons/apple-touch-icon.png` | 180² | **Safari iPhone home-screen icon** |
+
+Wiring: `app.json` `icon`/`web.favicon`/`android.adaptiveIcon` point at the new
+assets; the PWA manifest references `public/icons/icon-192.png` and
+`icon-512.png`; the web `<head>` declares `apple-touch-icon` →
+`public/icons/apple-touch-icon.png`. `themeColor`/`backgroundColor` left white
+(`#ffffff`) to match the logo's background (overriding the VSS purple `#667eea`).
+
 ## Validation / done criteria
 
 - `parse_imrf.py` runs clean and prints counts matching expectations
