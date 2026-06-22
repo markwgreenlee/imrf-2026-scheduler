@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "VSS 2026 Scheduler",
-    "slug": "vss-2026-scheduler",
-    "version": "1.8.1",
+    "name": "IMRF 2026 Scheduler",
+    "slug": "imrf-2026-scheduler",
+    "version": "1.0.0",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
     "platforms": [
@@ -11,37 +11,26 @@
       "web"
     ],
     "web": {
-      "baseUrl": "/vss-2026-scheduler",
+      "baseUrl": "/imrf-2026-scheduler",
       "favicon": "./assets/icon.png",
-      "name": "VSS 2026 Scheduler",
-      "shortName": "VSS 2026",
-      "description": "Search and organize your VSS 2026 conference schedule. 1,191 presentations with full-text search, day/type filters, and calendar export.",
-      "themeColor": "#667eea",
+      "name": "IMRF 2026 Scheduler",
+      "shortName": "IMRF 2026",
+      "description": "Search and organize your IMRF 2026 (Genova, June 24–27) conference schedule with full-text search, day/type filters, and calendar export.",
+      "themeColor": "#ffffff",
       "backgroundColor": "#ffffff",
       "display": "standalone",
       "orientation": "portrait",
-      "startUrl": "/vss-2026-scheduler/",
-      "scope": "/vss-2026-scheduler/"
+      "startUrl": "/imrf-2026-scheduler/",
+      "scope": "/imrf-2026-scheduler/"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#667eea"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
       }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "e87a1137-1944-44de-af8c-989ba6bb299a"
-      }
-    },
-    "owner": "markwgreenlee",
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/e87a1137-1944-44de-af8c-989ba6bb299a"
     },
     "plugins": [
       "expo-font"
