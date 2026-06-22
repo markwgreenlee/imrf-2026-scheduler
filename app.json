@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "VSS 2026 Scheduler",
+    "slug": "vss-2026-scheduler",
+    "version": "1.8.1",
+    "icon": "./assets/icon.png",
+    "orientation": "portrait",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "web": {
+      "baseUrl": "/vss-2026-scheduler",
+      "favicon": "./assets/icon.png",
+      "name": "VSS 2026 Scheduler",
+      "shortName": "VSS 2026",
+      "description": "Search and organize your VSS 2026 conference schedule. 1,191 presentations with full-text search, day/type filters, and calendar export.",
+      "themeColor": "#667eea",
+      "backgroundColor": "#ffffff",
+      "display": "standalone",
+      "orientation": "portrait",
+      "startUrl": "/vss-2026-scheduler/",
+      "scope": "/vss-2026-scheduler/"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#667eea"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e87a1137-1944-44de-af8c-989ba6bb299a"
+      }
+    },
+    "owner": "markwgreenlee",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e87a1137-1944-44de-af8c-989ba6bb299a"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
