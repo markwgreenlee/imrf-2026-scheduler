@@ -157,6 +157,9 @@ Each entry in `assets/imrf-data.json` has: `id`, `kind` (`keynote` / `symposium_
 
 ## Version History
 
+**v1.0.3** (2026-06-22)
+- Corrected a malformed organizer name in Symposium 5 ("Jahanian Najafabadi Amir Jahanian" → "Jahanian Najafabadi Amir"); the booklet duplicated the surname across a line break
+
 **v1.0.2** (2026-06-22)
 - Fixed more abstract-extraction bugs in the symposium parser:
   - Symposium introduction entries: organizer names that wrap across lines no longer bleed into the abstract, and a wrapped title is no longer mistaken for the organizer list

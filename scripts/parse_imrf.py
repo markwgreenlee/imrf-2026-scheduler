@@ -114,9 +114,18 @@ def is_name_list_line(line: str) -> bool:
     return all(w[0].isupper() or w.lower() in NAME_PARTICLES for w in words)
 
 
+# Targeted corrections for names the booklet renders malformed. SYM5's organizer
+# list wraps "Jahanian Najafabadi Amir" across a line break and repeats the
+# surname's first word ("...Jahanian" / "Najafabadi Amir Jahanian"); the name is
+# spelled correctly elsewhere in the booklet (e.g. talk listings).
+NAME_FIXES = {
+    "Jahanian Najafabadi Amir Jahanian": "Jahanian Najafabadi Amir",
+}
+
+
 def split_names(text: str):
     """Split a comma-separated organizer/author string into individual names."""
-    return [norm(n) for n in text.split(",") if norm(n)]
+    return [NAME_FIXES.get(norm(n), norm(n)) for n in text.split(",") if norm(n)]
 
 
 def parse_author_line(line: str):
@@ -357,7 +366,8 @@ def parse_symposia(section: str):
             "id": f"SYM{num}", "kind": "symposium_overview", "talk_number": None,
             "time": start, "title": sym_title,
             "authors": organizers, "author_numbers": [""] * len(organizers),
-            "affiliations": "", "presenter": "", "organizer": org_str, "bio": "",
+            "affiliations": "", "presenter": "",
+            "organizer": ", ".join(organizers), "bio": "",
             "abstract": norm(" ".join(overview)), "day": day, "date": date, "room": room,
             "session_title": sym_title, "session_kind": "Symposium",
             "session_start": start, "session_end": end,

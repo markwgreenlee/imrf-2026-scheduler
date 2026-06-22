@@ -2,7 +2,7 @@
   "expo": {
     "name": "IMRF 2026 Scheduler",
     "slug": "imrf-2026-scheduler",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "icon": "./assets/icon.png",
     "orientation": "portrait",
     "platforms": [
