@@ -19,17 +19,24 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
     ? session.author_numbers
     : null;
 
-  const kindColor = session.kind === 'poster'
-    ? '#2c7a3e'
-    : session.kind === 'symposium'
-    ? '#8a3a82'
-    : '#555';
-
-  const kindLabel = session.kind === 'poster'
-    ? 'Poster'
-    : session.kind === 'symposium'
-    ? 'Symposium'
-    : 'Talk';
+  const KIND_COLORS = {
+    poster: '#2c7a3e',
+    symposium: '#8a3a82',
+    symposium_overview: '#8a3a82',
+    keynote: '#b8472f',
+    workshop: '#c79a1e',
+    talk: '#186078',
+  };
+  const KIND_LABELS = {
+    poster: 'Poster',
+    symposium: 'Symposium Talk',
+    symposium_overview: 'Symposium',
+    keynote: 'Keynote',
+    workshop: 'Workshop',
+    talk: 'Talk',
+  };
+  const kindColor = KIND_COLORS[session.kind] || '#555';
+  const kindLabel = KIND_LABELS[session.kind] || 'Talk';
 
   return (
     <Modal
@@ -106,10 +113,33 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
             </View>
           ) : null}
 
+          {session.organizer ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>
+                {session.organizer.includes(',') ? 'Organizers' : 'Organizer'}
+              </Text>
+              <Text style={styles.authors}>{session.organizer}</Text>
+            </View>
+          ) : null}
+
+          {session.presenter && authorList.length > 1 ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Presenter</Text>
+              <Text style={styles.affiliations}>{session.presenter}</Text>
+            </View>
+          ) : null}
+
           {session.affiliations ? (
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Affiliations</Text>
               <Text style={styles.affiliations}>{session.affiliations}</Text>
+            </View>
+          ) : null}
+
+          {session.bio ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Speaker Bio</Text>
+              <Text style={styles.abstract}>{session.bio}</Text>
             </View>
           ) : null}
 

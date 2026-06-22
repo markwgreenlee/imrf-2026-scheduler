@@ -55,7 +55,7 @@ const SettingsScreen = () => {
         <View style={styles.card}>
           <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Presentations:</Text>
-            <Text style={styles.dataValue}>290</Text>
+            <Text style={styles.dataValue}>296</Text>
           </View>
           <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Conference:</Text>

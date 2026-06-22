@@ -38,7 +38,7 @@ const ExportButton = ({ sessions }) => {
     const eventParams = new URLSearchParams({
       text: session.room ? `[${toTitleCase(session.room)}] ${session.title}` : session.title,
       dates: `${startDateTime}/${endDateTime}`,
-      ctz: 'America/New_York',
+      ctz: 'Europe/Rome',
       location: session.room || '',
       details: `Authors: ${authors}\n\nAbstract: ${session.abstract || ''}`,
     });
@@ -127,11 +127,11 @@ const ExportButton = ({ sessions }) => {
       const allCalIds = calendars.filter(c => c.allowsModifications).map(c => c.id);
       const duplicateIds = new Set();
       for (const session of sessions) {
-        const date = session.date || '2026-05-15';
+        const date = session.date || '2026-06-24';
         const events = await Calendar.getEventsAsync(
           allCalIds,
-          new Date(`${date}T00:00:00-04:00`),
-          new Date(`${date}T23:59:59-04:00`)
+          new Date(`${date}T00:00:00+02:00`),
+          new Date(`${date}T23:59:59+02:00`)
         );
         const expectedTitle = session.room
           ? `[${toTitleCase(session.room)}] ${session.title}`
@@ -162,7 +162,7 @@ const ExportButton = ({ sessions }) => {
       for (const session of sessions) {
         if (skipDuplicates && duplicateIds.has(session.id)) continue;
         const authors = authorsString(session);
-        const date = session.date || '2026-05-15';
+        const date = session.date || '2026-06-24';
         const startTime = session.time || session.session_start || '09:00';
         const [startH, startM] = startTime.split(':').map(Number);
         // Each presentation is 15 minutes, not the full session duration
@@ -172,15 +172,15 @@ const ExportButton = ({ sessions }) => {
           endH += Math.floor(endM / 60);
           endM = endM % 60;
         }
-        const startDate = new Date(`${date}T${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}:00-04:00`);
-        const endDate   = new Date(`${date}T${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}:00-04:00`);
+        const startDate = new Date(`${date}T${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}:00+02:00`);
+        const endDate   = new Date(`${date}T${String(endH).padStart(2,'0')}:${String(endM).padStart(2,'0')}:00+02:00`);
         await Calendar.createEventAsync(defaultCal.id, {
           title: session.room ? `[${toTitleCase(session.room)}] ${session.title}` : session.title,
           startDate,
           endDate,
           location: session.room || '',
           notes: `Authors: ${authors}\n\nSession: ${session.session_title || ''}\n\nAbstract: ${session.abstract || ''}`,
-          timeZone: 'America/New_York',
+          timeZone: 'Europe/Rome',
           alarms: [],
         });
         created++;

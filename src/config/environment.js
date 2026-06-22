@@ -11,7 +11,7 @@ const config = {
   vssYear: process.env.EXPO_PUBLIC_VSS_YEAR || '2026',
   vssDates: process.env.EXPO_PUBLIC_VSS_DATES || 'June 24–27, 2026',
   vssLocation: process.env.EXPO_PUBLIC_VSS_LOCATION || 'Genova, Italy',
-  totalPresentations: process.env.EXPO_PUBLIC_TOTAL_PRESENTATIONS || '290',
+  totalPresentations: process.env.EXPO_PUBLIC_TOTAL_PRESENTATIONS || '296',
 
   // External links
   githubRepo: process.env.EXPO_PUBLIC_GITHUB_REPO || 'https://github.com/markwgreenlee/imrf-2026-scheduler',

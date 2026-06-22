@@ -65,7 +65,9 @@ export const DataProvider = ({ children }) => {
         s.authors.join(' ').toLowerCase().includes(lowerQuery) ||
         s.abstract.toLowerCase().includes(lowerQuery) ||
         s.session_title.toLowerCase().includes(lowerQuery) ||
-        s.affiliations.toLowerCase().includes(lowerQuery)
+        s.affiliations.toLowerCase().includes(lowerQuery) ||
+        (s.bio || '').toLowerCase().includes(lowerQuery) ||
+        (s.organizer || '').toLowerCase().includes(lowerQuery)
       );
     }
 
@@ -74,7 +76,10 @@ export const DataProvider = ({ children }) => {
     }
 
     if (kind) {
-      results = results.filter(s => s.kind === kind);
+      // the "symposium" filter also matches symposium overview entries
+      results = kind === 'symposium'
+        ? results.filter(s => s.kind === 'symposium' || s.kind === 'symposium_overview')
+        : results.filter(s => s.kind === kind);
     }
 
     return results;

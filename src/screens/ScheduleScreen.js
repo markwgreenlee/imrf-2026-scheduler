@@ -26,9 +26,9 @@ const removeFromAppleCalendar = async (session) => {
     const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
     const ids = calendars.filter(c => c.allowsModifications).map(c => c.id);
     if (!ids.length) return;
-    const date = session.date || '2026-05-15';
-    const start = new Date(`${date}T00:00:00-04:00`);
-    const end   = new Date(`${date}T23:59:59-04:00`);
+    const date = session.date || '2026-06-24';
+    const start = new Date(`${date}T00:00:00+02:00`);
+    const end   = new Date(`${date}T23:59:59+02:00`);
     const events = await Calendar.getEventsAsync(ids, start, end);
     const expectedTitle = session.room
       ? `[${toTitleCase(session.room)}] ${session.title}`

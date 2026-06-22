@@ -11,7 +11,15 @@ const SessionCard = ({ session, isSelected }) => {
     ? session.time
     : session.session_start || '';
 
-  const kindLabel = session.kind === 'poster' ? 'Poster' : session.kind === 'symposium' ? 'Symposium' : 'Talk';
+  const KIND_LABELS = {
+    poster: 'Poster',
+    symposium: 'Symposium',
+    symposium_overview: 'Symposium',
+    keynote: 'Keynote',
+    workshop: 'Workshop',
+    talk: 'Talk',
+  };
+  const kindLabel = KIND_LABELS[session.kind] || 'Talk';
 
   return (
     <View style={[styles.card, isSelected && styles.selectedCard]}>
@@ -55,7 +63,9 @@ const SessionCard = ({ session, isSelected }) => {
         <Text style={[
           styles.kindBadge,
           session.kind === 'poster' && styles.posterBadge,
-          session.kind === 'symposium' && styles.symposiumBadge,
+          (session.kind === 'symposium' || session.kind === 'symposium_overview') && styles.symposiumBadge,
+          session.kind === 'keynote' && styles.keynoteBadge,
+          session.kind === 'workshop' && styles.workshopBadge,
         ]}>
           {kindLabel}
         </Text>
@@ -151,6 +161,12 @@ const styles = StyleSheet.create({
   },
   symposiumBadge: {
     backgroundColor: '#8a3a82',
+  },
+  keynoteBadge: {
+    backgroundColor: '#b8472f',
+  },
+  workshopBadge: {
+    backgroundColor: '#c79a1e',
   },
 });
 

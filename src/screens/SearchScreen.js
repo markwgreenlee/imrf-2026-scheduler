@@ -13,8 +13,8 @@ import { DataContext } from '../context/DataContext';
 import SessionCard from '../components/SessionCard';
 import SessionDetailModal from '../components/SessionDetailModal';
 
-const DAYS = ['Friday', 'Saturday', 'Sunday', 'Monday', 'Tuesday'];
-const KINDS = ['talk', 'poster', 'symposium'];
+const DAYS = ['Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const KINDS = ['keynote', 'symposium', 'talk', 'poster', 'workshop'];
 
 const SearchScreen = () => {
   const { allSessions, selectedSessions, isLoading, toggleSession, searchSessions } = useContext(DataContext);
