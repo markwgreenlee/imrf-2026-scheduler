@@ -1,9 +1,9 @@
-const CACHE_NAME = 'vss-2026-v1.7.1';
+const CACHE_NAME = 'imrf-2026-v1.0.0';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.add('/vss-2026-scheduler/'))
+    caches.open(CACHE_NAME).then((cache) => cache.add('/imrf-2026-scheduler/'))
   );
 });
 

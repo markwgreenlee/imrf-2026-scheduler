@@ -29,16 +29,16 @@ jobs:
           node-version: 20
       - run: npm install
       - run: npx expo export -p web
-      - run: sed -i 's|src="/_expo/|src="/vss-2026-scheduler/_expo/|g' dist/index.html
+      - run: sed -i 's|src="/_expo/|src="/imrf-2026-scheduler/_expo/|g' dist/index.html
       - name: Patch index.html for Safari PWA icon and name
         run: |
           python3 - <<'PYEOF'
           with open('dist/index.html', 'r') as f:
               html = f.read()
           tags = (
-              '<link rel="apple-touch-icon" href="/vss-2026-scheduler/icons/icon-192.png">\n'
+              '<link rel="apple-touch-icon" href="/imrf-2026-scheduler/icons/apple-touch-icon.png">\n'
               '    <meta name="apple-mobile-web-app-capable" content="yes">\n'
-              '    <meta name="apple-mobile-web-app-title" content="VSS 2026">\n'
+              '    <meta name="apple-mobile-web-app-title" content="IMRF 2026">\n'
               '    <meta name="apple-mobile-web-app-status-bar-style" content="default">\n'
           )
           html = html.replace('</head>', tags + '</head>')
@@ -55,8 +55,8 @@ jobs:
               with open(path) as f:
                   m = json.load(f)
               m['icons'] = [
-                  {"src": "/vss-2026-scheduler/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
-                  {"src": "/vss-2026-scheduler/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+                  {"src": "/imrf-2026-scheduler/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                  {"src": "/imrf-2026-scheduler/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
               ]
               with open(path, 'w') as f:
                   json.dump(m, f, indent=2)
