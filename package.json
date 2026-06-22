@@ -1,0 +1,44 @@
+{
+  "name": "imrf-2026-scheduler",
+  "version": "1.0.0",
+  "description": "IMRF 2026 Schedule Organizer - Native iOS & Android App",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "build-android": "eas build --platform android",
+    "build-ios": "eas build --platform ios",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~56.0.11",
+    "@expo/ngrok": "^4.1.3",
+    "@expo/vector-icons": "^15.1.1",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-picker/picker": "2.11.4",
+    "@react-navigation/bottom-tabs": "^6.5.0",
+    "@react-navigation/native": "^6.1.0",
+    "babel-preset-expo": "~56.0.11",
+    "expo": "~56.0.0",
+    "expo-calendar": "~56.0.8",
+    "expo-file-system": "~56.0.7",
+    "expo-font": "~56.0.5",
+    "expo-sharing": "~56.0.12",
+    "expo-updates": "~56.0.15",
+    "ical.js": "^2.0.0",
+    "lodash.throttle": "^4.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-gesture-handler": "~2.31.1",
+    "react-native-reanimated": "4.3.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.1",
+    "react-native-web": "^0.21.0",
+    "react-native-worklets": "0.8.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0"
+  }
+}

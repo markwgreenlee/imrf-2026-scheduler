@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.expo
+.expo-shared
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build
+dist
+build
+*.apk
+*.aab
+*.ipa
+*.jks
+*.keystore
+
+# Misc
+.eslintcache
+.gradle
+.m2
+*.lock
+
+# Microsoft Office temp files (created while a document is open)
+~$*
