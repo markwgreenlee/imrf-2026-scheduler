@@ -1,3 +1,4 @@
 theme: jekyll-theme-cayman
-title: "VSS 2026 Schedule Organizer"
-description: "Help and documentation for the VSS 2026 conference scheduler app"
+title: "IMRF 2026 Schedule Organizer"
+description: "Help and documentation for the IMRF 2026 conference scheduler app"
+baseurl: /imrf-2026-scheduler

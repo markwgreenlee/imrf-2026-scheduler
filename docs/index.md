@@ -1,14 +1,14 @@
-Welcome to the vss-2026-scheduler wiki!
+Welcome to the imrf-2026-scheduler wiki!
 Building a Conference Schedule App with React Native, Expo, and AI
 
   1. Overview
 
-  The VSS 2026 Schedule Organizer is a free, open-source mobile and web app built for the Vision Sciences Society
-  (https://www.visionsciences.org) annual meeting (May 15–19, 2026, St. Petersburg Beach, FL). It allows conference
-  attendees to search 1,191 presentations, build a personal schedule, and export sessions to Google or Apple Calendar.
+  The IMRF 2026 Schedule Organizer is a free, open-source mobile and web app built for the International Multisensory
+  Research Forum (https://imrf2026.sciencesconf.org/) annual meeting (June 24–27, 2026, Genova, Italy). It allows conference
+  attendees to search 296 presentations, build a personal schedule, and export sessions to Google or Apple Calendar.
   
   The app was built in approximately two days by a non-developer using AI-assisted coding. The full source code is available
-   at https://github.com/markwgreenlee/vss-2026-scheduler and can be adapted for any scientific or technical conference that
+   at https://github.com/markwgreenlee/imrf-2026-scheduler and can be adapted for any scientific or technical conference that
    publishes an abstracts PDF.
   
   ---
@@ -27,8 +27,8 @@ Building a Conference Schedule App with React Native, Expo, and AI
   3. Data Pipeline
   
   The most reusable component of this project is the data extraction pipeline. Presentation data was sourced from the
-  official VSS 2026 Abstracts PDF and converted to a structured JSON file (assets/vss-data.json) with fields for title,
-  authors, affiliations, abstract, date, time, room, session title, and type (Talk / Poster / Symposium).
+  official IMRF 2026 Abstract Booklet and converted to a structured JSON file (assets/imrf-data.json) with fields for title,
+  authors, affiliations, abstract, date, time, room, session title, and type (Keynote / Symposium / Talk / Poster / Workshop).
 
   For other conferences, the same approach applies:
   - Extract text from the abstracts PDF (e.g., using pdfplumber or PyMuPDF in Python)
@@ -87,23 +87,23 @@ Building a Conference Schedule App with React Native, Expo, and AI
   - Fix asset paths for subdirectory deployment with a sed post-processing step (see .github/workflows/deploy-web.yml)
   
   The web version is now the primary distribution method, accessible at:
-  https://markwgreenlee.github.io/vss-2026-scheduler
+  https://markwgreenlee.github.io/imrf-2026-scheduler
 
   ---
   7. Adapting for Your Conference
   
   To reuse this app for another conference:
 
-  1. Replace the data file — generate a new assets/vss-data.json matching the existing schema
-  2. Update branding — app name, colors (#667eea), and header text in App.js and app.json
-  3. Update the timezone — calendar events are hardcoded to America/New_York; change to your conference location in
+  1. Replace the data file — generate a new assets/imrf-data.json matching the existing schema
+  2. Update branding — app name, colors (#186078), and header text in App.js and app.json
+  3. Update the timezone — calendar events are set to Europe/Rome (Genova); change to your conference location in
   ExportButton.js
   4. Update the GitHub Pages URL — set web.baseUrl in app.json and update the sed command in the deployment workflow
   5. Update the Umami Analytics website ID — register a new site at https://cloud.umami.is and replace the
   data-website-id in App.js with the new UUID
   6. Republish via EAS Update — run eas update --branch production
 
-  The data schema is documented in assets/vss-data.json. The minimum required fields are title, authors, date, time, and id.
+  The data schema is documented in assets/imrf-data.json. The minimum required fields are title, authors, date, time, and id.
 
   ---
   8. Lessons Learned
@@ -139,8 +139,8 @@ Building a Conference Schedule App with React Native, Expo, and AI
   ---
   10. Keeping the Codebase Current — SDK Upgrades
 
-  After VSS 2026 ended, the codebase was upgraded from Expo SDK 54 to SDK 56 (v1.8.0, May 2026). This is straightforward
-  for a PWA-only project and worth doing before adapting the app for a new conference.
+  This scheduler is adapted from the VSS 2026 Schedule Organizer codebase, which runs on Expo SDK 56. Keeping the
+  Expo SDK current is straightforward for a PWA-only project and worth doing before adapting the app for a new conference.
 
   Key changes in SDK 56 relevant to this project:
   - React Native 0.85.3 and React 19.2.3 (performance improvements, faster Hermes startup)

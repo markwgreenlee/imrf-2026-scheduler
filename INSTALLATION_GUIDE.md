@@ -1,12 +1,10 @@
-# 📱 VSS 2026 Schedule Organizer — Installation & Usage Guide
+# 📱 IMRF 2026 Schedule Organizer — Installation & Usage Guide
 
 ## Quickstart for Conference Attendees
 
-**No installation required.** Open the app in any phone browser by scanning this QR code:
+**No installation required.** Open the app in any phone browser at:
 
-![VSS 2026 Scheduler Web QR Code](vss-web-qr.png)
-
-Or go directly to: **https://markwgreenlee.github.io/vss-2026-scheduler**
+**https://markwgreenlee.github.io/imrf-2026-scheduler**
 
 Works on any iPhone or Android. No app, no account, no setup.
 
@@ -40,15 +38,15 @@ The app installs as a Progressive Web App (PWA) — it opens full-screen like a 
 
 1. **App Opens to Search Tab**
    - You'll see a "Search presentations..." text box
-   - Lists 1,191 presentations from VSS 2026
+   - Lists 296 presentations from IMRF 2026
 
 2. **Search for Presentations**
    - Type keywords: "attention", "motion", "memory", author names, etc.
    - Results appear instantly as you type
 
 3. **Filter Results**
-   - Select a **Day** (Friday through Tuesday)
-   - Select a **Session Type** (Talk, Poster, Symposium, etc.)
+   - Select a **Day** (Wednesday through Saturday)
+   - Select a **Session Type** (Keynote, Symposium, Talk, Poster, Workshop)
    - Results update automatically
 
 ### Tabs Explained
@@ -94,7 +92,7 @@ The app installs as a Progressive Web App (PWA) — it opens full-screen like a 
 - App version info
 - Feature list
 - Data statistics
-- Links to VSS website and GitHub
+- Links to IMRF website and GitHub
 
 ---
 
@@ -121,7 +119,7 @@ The app installs as a Progressive Web App (PWA) — it opens full-screen like a 
 
 ### What's in Each Calendar Event
 
-- ⏰ **Time** — exact start and end time, anchored to Eastern Daylight Time (Florida)
+- ⏰ **Time** — exact start and end time, anchored to Central European Summer Time (Genova)
 - 📍 **Location** — room or venue name
 - 📝 **Title** — full presentation title, including poster number where applicable
 - 👥 **Authors** — all author names and affiliations
@@ -143,7 +141,7 @@ The app installs as a Progressive Web App (PWA) — it opens full-screen like a 
 - Try shorter search terms (e.g., "motion" instead of "visual motion")
 - Search by author last name only (e.g., "Smith")
 - Make sure the Day and Session Type filters are set to "All"
-- Refresh the page to verify all 1,191 presentations are loaded
+- Refresh the page to verify all 296 presentations are loaded
 
 ### Calendar export not working
 
@@ -170,8 +168,8 @@ The app installs as a Progressive Web App (PWA) — it opens full-screen like a 
 ### Quick Start
 
 ```bash
-git clone https://github.com/markwgreenlee/vss-2026-scheduler.git
-cd vss-2026-scheduler
+git clone https://github.com/markwgreenlee/imrf-2026-scheduler.git
+cd imrf-2026-scheduler
 npm install
 npx expo start
 ```
@@ -206,13 +204,13 @@ npm run build-ios      # Build iOS app via EAS
 ### Project Structure
 
 ```
-vss-2026-scheduler/
+imrf-2026-scheduler/
 ├── App.js                          # Entry point, tab navigation, SW registration
 ├── app.json                        # Expo / EAS / PWA configuration
 ├── public/
 │   └── sw.js                       # Service worker (offline caching)
 ├── assets/
-│   └── vss-data.json               # 1,191 presentations
+│   └── imrf-data.json              # 296 presentations
 ├── src/
 │   ├── screens/
 │   │   ├── SearchScreen.js         # Search & filter
@@ -229,14 +227,14 @@ vss-2026-scheduler/
 
 ### Tech Stack
 
-- React Native 0.76 / React 19
-- Expo SDK 54
+- React Native 0.85 / React 19.2
+- Expo SDK 56
 - expo-calendar (direct Apple Calendar event creation)
 - AsyncStorage (persistent schedule)
 - Progressive Web App (PWA) with service worker for offline support
 
 ---
 
-**Good luck at VSS 2026! 🎓**
+**Enjoy IMRF 2026! 🧠**
 
-Questions? Open an issue on [GitHub](https://github.com/markwgreenlee/vss-2026-scheduler/issues) or email markwgreenlee@gmail.com.
+Questions? Open an issue on [GitHub](https://github.com/markwgreenlee/imrf-2026-scheduler/issues) or email markwgreenlee@gmail.com.

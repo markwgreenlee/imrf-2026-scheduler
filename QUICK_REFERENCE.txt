@@ -1,5 +1,5 @@
 ╔═══════════════════════════════════════════════════════════════════════╗
-║      VSS 2026 SCHEDULE ORGANIZER - QUICK REFERENCE CARD              ║
+║      IMRF 2026 SCHEDULE ORGANIZER - QUICK REFERENCE CARD              ║
 ║                    iOS & Android Mobile App                          ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
@@ -56,7 +56,7 @@ METHOD 4: APP STORE (Production - iOS Only)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🔍 SEARCH TAB
-├─ Search 190 presentations
+├─ Search 296 presentations
 ├─ Type: topics, authors, keywords
 ├─ Filter by day (Thu-Tue)
 ├─ Filter by type (Talk, Poster, Symposium)
@@ -78,7 +78,7 @@ METHOD 4: APP STORE (Production - iOS Only)
 ├─ App information
 ├─ Feature list
 ├─ Help guide
-└─ Links to VSS & GitHub
+└─ Links to IMRF & GitHub
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📅 EXPORTING TO CALENDAR
@@ -199,7 +199,7 @@ OPTIONAL
 ✨ WHAT'S INCLUDED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ 190 VSS presentations
+✅ 296 IMRF presentations
 ✅ Full-text search
 ✅ Advanced filtering (day, type)
 ✅ Schedule builder
@@ -214,9 +214,9 @@ OPTIONAL
 🎓 CONFERENCE DATES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-VSS 2026: May 15-19, 2026
-Location: Fort Lauderdale, FL
-Website: https://www.visionsciences.org
+IMRF 2026: June 24-27, 2026
+Location: Genova, Italy
+Website: https://imrf2026.sciencesconf.org/
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 DOCUMENTATION
@@ -225,11 +225,11 @@ Website: https://www.visionsciences.org
 • INSTALLATION_GUIDE.md - Complete setup & usage guide
 • README.md - General information
 • QUICK_REFERENCE.txt - This file
-• GitHub: github.com/markwgreenlee/vss-2026-scheduler
+• GitHub: github.com/markwgreenlee/imrf-2026-scheduler
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Good luck at VSS 2026! 🎓
+Enjoy IMRF 2026! 🧠
 
 Questions? See INSTALLATION_GUIDE.md for detailed help.
 

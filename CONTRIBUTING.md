@@ -1,4 +1,4 @@
-# Contributing to VSS 2026 Scheduler
+# Contributing to IMRF 2026 Scheduler
 
 Contributions are welcome! Here are some ways you can help:
 
