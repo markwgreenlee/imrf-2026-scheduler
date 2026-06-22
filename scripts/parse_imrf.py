@@ -121,12 +121,50 @@ def split_authors_affs_abstract(lines, start):
     while i < len(lines) and is_author_line(lines[i]) and not is_affiliation_line(lines[i]):
         author_lines.append(lines[i].strip())
         i += 1
-    aff_lines = []
-    while i < len(lines) and (is_affiliation_line(lines[i])
-                              or lines[i].strip() in ("*speaker", "*organizer", "*presenter")):
-        if is_affiliation_line(lines[i]):
-            aff_lines.append(norm(lines[i]))
-        i += 1
+    # Collect the numbered affiliation block. Each affiliation starts with
+    # "n - " and may wrap across line/page breaks, so a line that does NOT start
+    # a new "n - " is a continuation of the current affiliation. Affiliations
+    # below the highest index the authors reference are unambiguously delimited
+    # by the next "n - " marker, so their continuations always merge. The final
+    # affiliation has no following marker, so it merges continuations only until
+    # it is closed by a ')' (e.g. a "(Country)"); the next line is the abstract.
+    # (A mid-text "(SUN)" doesn't end the affiliation if more markers are due.)
+    max_aff = 0
+    for g in re.findall(r"\((\d[\d,\s]*)\)", " ".join(author_lines)):
+        for x in g.split(","):
+            if x.strip().isdigit():
+                max_aff = max(max_aff, int(x.strip()))
+    aff_lines = []        # list of "n - text"
+    cur = -1              # index of the affiliation currently being built
+    while i < len(lines):
+        ln = lines[i].strip()
+        if ln in ("*speaker", "*organizer", "*presenter"):
+            i += 1
+            continue
+        m = re.match(r"^(\d+)\s*[-–]\s*(.*)$", ln)
+        if m:
+            # A few entries list affiliations inline on one line:
+            # "1 - A (US), 2 - B (US), 3 - C (US)". Split on ", n -" so the
+            # current affiliation index tracks the real last one (else the
+            # abstract that follows gets merged in). No-op for normal lines.
+            for seg in re.split(r",\s*(?=\d+\s*[-–]\s)", f"{m.group(1)} - {m.group(2)}"):
+                aff_lines.append(norm(seg))
+            cur = len(aff_lines) - 1
+            i += 1
+            continue
+        if cur < 0:
+            break
+        cur_num = int(re.match(r"(\d+)", aff_lines[cur]).group(1))
+        incomplete = not aff_lines[cur].rstrip().endswith(")")
+        if (cur_num < max_aff or incomplete) and not ln.rstrip().endswith("."):
+            aff_lines[cur] = norm(aff_lines[cur] + " " + ln)
+            i += 1
+        else:
+            break
+    # a '*speaker/*organizer/*presenter' footnote can render adjacent to an
+    # affiliation's country (e.g. "(Canada\n*speaker)"); strip it from the text.
+    aff_lines = [norm(re.sub(r"\s*\*(speaker|organizer|presenter)\b", "", a))
+                 for a in aff_lines]
     abstract = norm(" ".join(lines[i:]))
     return " ".join(author_lines), aff_lines, abstract
 
@@ -211,7 +249,14 @@ def parse_keynotes(section: str):
         body = [l for l in after if l.strip()
                 and not re.search(r"JUNE \d+|ROOM|HALL", l)]
         title = norm(body[0]) if body else ""
-        abstract = norm(" ".join(body[1:]))
+        # The NEXT keynote speaker's name/affiliation/bio trails this block
+        # (it sits before the next "KEYNOTE n" header). Stop the abstract there.
+        abs_lines = []
+        for l in body[1:]:
+            if re.match(r"^\s*(Professor|Prof\.?|Dr\.?)\s+[A-Z]", l):
+                break
+            abs_lines.append(l)
+        abstract = norm(" ".join(abs_lines))
         entries.append({
             "id": f"KN{num}", "kind": "keynote", "talk_number": None, "time": start,
             "title": title, "authors": [name] if name else [],
