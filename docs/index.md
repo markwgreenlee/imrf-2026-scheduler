@@ -35,7 +35,7 @@ Building a Conference Schedule App with React Native, Expo, and AI
   - Parse and clean the structured fields
   - Export as JSON matching the schema in this repo
   
-  The data quality corrections in this project (150+ fixes) were also AI-assisted, using pattern matching and manual review.
+  For IMRF 2026, a single Python parser (`scripts/parse_imrf.py`) extracts all 296 entries from the abstract booklet PDF and validates them against expected per-type counts. Edge cases in the booklet — affiliations that wrap across page breaks, inline comma-separated affiliations, withdrawn placeholder entries, and trailing speaker bios after keynote abstracts — are handled in the parser, and any remaining corrections were AI-assisted using pattern matching and manual review against the source PDF.
 
   ---
   4. Architecture

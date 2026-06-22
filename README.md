@@ -157,6 +157,15 @@ Each entry in `assets/imrf-data.json` has: `id`, `kind` (`keynote` / `symposium_
 
 ## Version History
 
+**v1.0.1** (2026-06-22)
+- Added Umami analytics to the web version (privacy-friendly, cookie-free; web only, no impact on native)
+- Fixed parser bugs in the abstract extraction:
+  - Keynote abstracts no longer pick up the following speaker's bio
+  - Affiliations that wrap across line/page breaks are merged correctly (previously some were clipped and leaked into the abstract)
+  - Inline comma-separated affiliations on a single line are split properly
+  - `*speaker`/`*organizer` footnotes are stripped from affiliation text
+- Regenerated `imrf-data.json`; all 296 entries pass validation
+
 **v1.0.0** (2026-06-22)
 - Initial release for IMRF 2026 (Genova, June 24–27)
 - 296 presentations parsed from the official Abstract Booklet: 3 keynotes, 11 symposia (with 51 symposium talks), 40 talk-session talks, 187 posters, and 4 pre-conference workshops

@@ -1,6 +1,6 @@
 {
   "name": "imrf-2026-scheduler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "IMRF 2026 Schedule Organizer - Native iOS & Android App",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
