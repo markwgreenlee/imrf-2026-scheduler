@@ -65,9 +65,10 @@ Then close and reopen the Calendar app.
 ## Features
 
 - **296 presentations** from the official IMRF 2026 Abstract Booklet
-- Full-text search by title, author, abstract, affiliation, and speaker bio
+- Full-text search by title, author, abstract, affiliation, organizer, and speaker bio
 - Filter by day (Wed–Sat) and type (Keynote / Symposium / Talk / Poster / Workshop)
 - **Tap any card** to read the full abstract, authors, affiliations, presenter, and (for keynotes) speaker bio in a pop-up sheet
+- Each symposium's introduction is included as its own entry, presented by the symposium organizers (searchable by organizer name)
 - Build a personal schedule — add/remove directly from the detail sheet
 - Export to **Google Calendar** (opens in browser) or **Apple Calendar** (adds events directly)
 - Persistent schedule — survives app restarts
