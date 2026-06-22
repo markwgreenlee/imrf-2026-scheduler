@@ -9,8 +9,15 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
-// Analytics: add an IMRF-specific Umami (or other) tracking snippet here if desired.
-// The VSS tracking ID was intentionally removed during rebranding.
+// Umami Analytics (web only) — privacy-friendly, cookie-free
+if (typeof document !== 'undefined') {
+  const script = document.createElement('script');
+  script.async = true;
+  script.defer = true;
+  script.setAttribute('data-website-id', '2118f9f5-8477-4542-ad66-c06d4a1dedc7');
+  script.src = 'https://cloud.umami.is/script.js';
+  document.head.appendChild(script);
+}
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
