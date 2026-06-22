@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Image, Linking } from 'react-native';
 
-const DISMISSED_KEY = 'vss_install_dismissed';
-const APP_URL = 'https://markwgreenlee.github.io/vss-2026-scheduler';
+const DISMISSED_KEY = 'imrf_install_dismissed';
+const APP_URL = 'https://markwgreenlee.github.io/imrf-2026-scheduler';
 
 const isIOS = () =>
   typeof navigator !== 'undefined' &&
@@ -91,14 +91,14 @@ export default function InstallPrompt() {
           </>
         ) : chromeOnIOS ? (
           <>
-            <Text style={styles.title}>Add VSS 2026 to your home screen</Text>
+            <Text style={styles.title}>Add IMRF 2026 to your home screen</Text>
             <Text style={styles.body}>
               Tap <Text style={styles.bold}>Open in Safari</Text> — Safari is required to install the app.
             </Text>
           </>
         ) : (
           <>
-            <Text style={styles.title}>Add VSS 2026 to your home screen</Text>
+            <Text style={styles.title}>Add IMRF 2026 to your home screen</Text>
             <Text style={styles.body}>Opens full-screen and works offline.</Text>
           </>
         )}
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addBtn: {
-    backgroundColor: '#667eea',
+    backgroundColor: '#186078',
     borderRadius: 6,
     paddingHorizontal: 14,
     paddingVertical: 6,

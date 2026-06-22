@@ -15,9 +15,9 @@ const SettingsScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>About This App</Text>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>VSS 2026 Schedule Organizer</Text>
+          <Text style={styles.cardTitle}>IMRF 2026 Schedule Organizer</Text>
           <Text style={styles.cardText}>Version {version}</Text>
-          <Text style={styles.cardText}>May 15–19, 2026</Text>
+          <Text style={styles.cardText}>June 24–27, 2026 · Genova, Italy</Text>
           <Text style={styles.versionNote}>
             You are using the latest standalone web version — no Expo Go or app download required.
           </Text>
@@ -28,23 +28,23 @@ const SettingsScreen = () => {
         <Text style={styles.sectionTitle}>Features</Text>
         <View style={styles.featureList}>
           <View style={styles.featureItem}>
-            <Icon name="magnify" size={20} color="#667eea" />
+            <Icon name="magnify" size={20} color="#186078" />
             <Text style={styles.featureText}>Full-text search — title, authors, abstract, affiliation</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="filter" size={20} color="#667eea" />
+            <Icon name="filter" size={20} color="#186078" />
             <Text style={styles.featureText}>Filter by day & presentation type</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="calendar-plus" size={20} color="#667eea" />
+            <Icon name="calendar-plus" size={20} color="#186078" />
             <Text style={styles.featureText}>Export to Google Calendar</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="apple" size={20} color="#667eea" />
+            <Icon name="apple" size={20} color="#186078" />
             <Text style={styles.featureText}>Export to Apple Calendar (native app only)</Text>
           </View>
           <View style={styles.featureItem}>
-            <Icon name="wifi-off" size={20} color="#667eea" />
+            <Icon name="wifi-off" size={20} color="#186078" />
             <Text style={styles.featureText}>Works offline after first load</Text>
           </View>
         </View>
@@ -55,18 +55,18 @@ const SettingsScreen = () => {
         <View style={styles.card}>
           <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Presentations:</Text>
-            <Text style={styles.dataValue}>1,191</Text>
+            <Text style={styles.dataValue}>290</Text>
           </View>
           <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Conference:</Text>
-            <Text style={styles.dataValue}>VSS 2026</Text>
+            <Text style={styles.dataValue}>IMRF 2026</Text>
           </View>
           <View style={styles.dataRow}>
             <Text style={styles.dataLabel}>Location:</Text>
-            <Text style={styles.dataValue}>St. Petersburg Beach, FL</Text>
+            <Text style={styles.dataValue}>Genova, Italy</Text>
           </View>
           <Text style={styles.disclaimer}>
-            Presentation data is sourced from the official VSS 2026 Abstracts PDF published by the Vision Sciences Society. This app was inspired by MiYoung Kwon's HTML conference scheduler.
+            Presentation data is sourced from the official IMRF 2026 Abstract Booklet for the International Multisensory Research Forum. This app was inspired by MiYoung Kwon's HTML conference scheduler.
           </Text>
           <Text style={styles.disclaimer}>
             All data is stored locally on your device. No personal information is sent to external servers.
@@ -90,24 +90,24 @@ const SettingsScreen = () => {
         <Text style={styles.sectionTitle}>Links</Text>
         <TouchableOpacity
           style={styles.linkButton}
-          onPress={() => handleOpenURL('https://www.visionsciences.org')}
+          onPress={() => handleOpenURL('https://imrf2026.sciencesconf.org/')}
         >
-          <Icon name="web" size={20} color="#667eea" />
-          <Text style={styles.linkText}>VSS Official Website</Text>
-          <Icon name="chevron-right" size={20} color="#667eea" />
+          <Icon name="web" size={20} color="#186078" />
+          <Text style={styles.linkText}>IMRF 2026 Website</Text>
+          <Icon name="chevron-right" size={20} color="#186078" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.linkButton}
-          onPress={() => handleOpenURL('https://github.com/markwgreenlee/vss-2026-scheduler')}
+          onPress={() => handleOpenURL('https://github.com/markwgreenlee/imrf-2026-scheduler')}
         >
-          <Icon name="github" size={20} color="#667eea" />
+          <Icon name="github" size={20} color="#186078" />
           <Text style={styles.linkText}>GitHub Repository</Text>
-          <Icon name="chevron-right" size={20} color="#667eea" />
+          <Icon name="chevron-right" size={20} color="#186078" />
         </TouchableOpacity>
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Made with ❤️ for VSS 2026</Text>
+        <Text style={styles.footerText}>Made with ❤️ for IMRF 2026</Text>
       </View>
     </ScrollView>
   );
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#667eea',
+    color: '#186078',
     marginBottom: 12,
   },
   card: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   },
   dataValue: {
     fontSize: 13,
-    color: '#667eea',
+    color: '#186078',
     fontWeight: '600',
   },
   disclaimer: {
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   linkText: {
     flex: 1,
     fontSize: 14,
-    color: '#667eea',
+    color: '#186078',
     fontWeight: '500',
   },
   footer: {

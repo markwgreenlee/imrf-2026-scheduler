@@ -33,7 +33,7 @@ const SearchScreen = () => {
   if (isLoading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#667eea" />
+        <ActivityIndicator size="large" color="#186078" />
       </View>
     );
   }
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statsText: {
-    color: '#667eea',
+    color: '#186078',
     fontSize: 12,
     fontWeight: '600',
   },

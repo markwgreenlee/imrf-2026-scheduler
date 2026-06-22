@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   count: {
     fontSize: 12,
-    color: '#667eea',
+    color: '#186078',
     fontWeight: '600',
   },
   list: {

@@ -68,7 +68,7 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
           <View style={styles.metaBox}>
             {session.time || session.session_start ? (
               <View style={styles.metaRow}>
-                <Icon name="clock-outline" size={15} color="#667eea" />
+                <Icon name="clock-outline" size={15} color="#186078" />
                 <Text style={styles.metaText}>
                   {session.time || session.session_start}
                   {session.session_end ? ` – ${session.session_end}` : ''}
@@ -77,13 +77,13 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
             ) : null}
             {session.room ? (
               <View style={styles.metaRow}>
-                <Icon name="map-marker-outline" size={15} color="#667eea" />
+                <Icon name="map-marker-outline" size={15} color="#186078" />
                 <Text style={styles.metaText}>{session.room}</Text>
               </View>
             ) : null}
             {session.date ? (
               <View style={styles.metaRow}>
-                <Icon name="calendar-outline" size={15} color="#667eea" />
+                <Icon name="calendar-outline" size={15} color="#186078" />
                 <Text style={styles.metaText}>{session.day}, {session.date}</Text>
               </View>
             ) : null}
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   dayBadge: {
     fontSize: 12,
     color: '#fff',
-    backgroundColor: '#667eea',
+    backgroundColor: '#186078',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   posterId: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#667eea',
+    color: '#186078',
   },
   sessionTitle: {
     fontSize: 13,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#667eea',
+    color: '#186078',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#667eea',
+    backgroundColor: '#186078',
     padding: 14,
     borderRadius: 10,
     gap: 10,

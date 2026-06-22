@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import vssData from '../../assets/vss-data.json';
+import imrfData from '../../assets/imrf-data.json';
 
 export const DataContext = createContext();
 
@@ -14,7 +14,7 @@ export const DataProvider = ({ children }) => {
     const loadData = async () => {
       try {
         // Load sessions from embedded JSON
-        setAllSessions(vssData);
+        setAllSessions(imrfData);
         
         // Load previously selected sessions
         const saved = await AsyncStorage.getItem('selectedSessions');

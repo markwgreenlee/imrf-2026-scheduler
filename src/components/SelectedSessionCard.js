@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#667eea',
+    borderLeftColor: '#186078',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   posterId: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#667eea',
+    color: '#186078',
   },
   details: {
     gap: 3,

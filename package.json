@@ -1,7 +1,7 @@
 {
-  "name": "vss-2026-scheduler",
+  "name": "imrf-2026-scheduler",
   "version": "1.0.0",
-  "description": "VSS 2026 Schedule Organizer - Native iOS & Android App",
+  "description": "IMRF 2026 Schedule Organizer - Native iOS & Android App",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",

@@ -23,7 +23,7 @@ const SessionCard = ({ session, isSelected }) => {
           ) : null}
         </View>
         {isSelected && (
-          <Icon name="check-circle" size={20} color="#667eea" />
+          <Icon name="check-circle" size={20} color="#186078" />
         )}
       </View>
 
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
   selectedCard: {
-    borderColor: '#667eea',
+    borderColor: '#186078',
     backgroundColor: '#f0f4ff',
   },
   header: {
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#667eea',
+    color: '#186078',
     marginBottom: 2,
   },
   room: {
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   posterId: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#667eea',
+    color: '#186078',
   },
   authors: {
     fontSize: 12,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   day: {
     fontSize: 10,
     color: '#fff',
-    backgroundColor: '#667eea',
+    backgroundColor: '#186078',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
