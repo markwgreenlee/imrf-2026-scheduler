@@ -32,7 +32,7 @@ const conference = {
   // --- Programme shape -----------------------------------------------------
   // Order the filter chips appear in. Kinds present in the data but missing
   // here are appended alphabetically rather than hidden.
-  kindOrder: ['keynote', 'workshop', 'symposium_overview', 'symposium', 'talk', 'poster'],
+  kindOrder: ['keynote', 'workshop', 'symposium', 'talk', 'poster'],
   // Irregular plurals and anything that should not read as its raw field
   // value. Unlisted kinds are humanised automatically ('symposium_overview'
   // becomes 'Symposium overview' / 'Symposium overviews').
@@ -52,8 +52,10 @@ const conference = {
   // IMRF poster titles are already 'Poster Session 1' with no topic suffix, so
   // they need no trimming.
   posterSessionName: (title) => title || 'Poster session',
-  // Kinds that are really part of another kind's session block.
-  blockKindAlias: { symposium_overview: 'symposium' },
+  // Kinds that are really part of another kind. An aliased kind gets no filter
+  // chip of its own and is matched by its target's chip, and its entries join
+  // the target's session block. Cards keep their own badge.
+  kindAlias: { symposium_overview: 'symposium' },
 
   // --- Calendar export -----------------------------------------------------
   icsFileName: 'imrf-2026-schedule.ics',
