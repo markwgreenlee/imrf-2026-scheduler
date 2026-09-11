@@ -9,6 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { kindName } from '../utils/filters';
 
 const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
   if (!session) return null;
@@ -36,7 +37,9 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
     talk: 'Talk',
   };
   const kindColor = KIND_COLORS[session.kind] || '#555';
-  const kindLabel = KIND_LABELS[session.kind] || 'Talk';
+  // Shared with the filter chips, so a kind this build has never seen reads
+  // as itself rather than being mislabelled.
+  const kindLabel = kindName(session.kind);
 
   return (
     <Modal

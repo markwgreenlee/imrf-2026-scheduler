@@ -12,9 +12,7 @@ import {
 import { DataContext } from '../context/DataContext';
 import SessionCard from '../components/SessionCard';
 import SessionDetailModal from '../components/SessionDetailModal';
-
-const DAYS = ['Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const KINDS = ['keynote', 'symposium', 'talk', 'poster', 'workshop'];
+import { daysInOrder, kindsInOrder, kindLabel } from '../utils/filters';
 
 const SearchScreen = () => {
   const { allSessions, selectedSessions, isLoading, toggleSession, searchSessions } = useContext(DataContext);
@@ -22,6 +20,9 @@ const SearchScreen = () => {
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedKind, setSelectedKind] = useState('');
   const [detailSession, setDetailSession] = useState(null);
+
+  const DAYS  = useMemo(() => daysInOrder(allSessions), [allSessions]);
+  const KINDS = useMemo(() => kindsInOrder(allSessions), [allSessions]);
 
   const results = useMemo(() => {
     return searchSessions(query, selectedDay, selectedKind);
@@ -78,7 +79,7 @@ const SearchScreen = () => {
               onPress={() => toggleKind(kind)}
             >
               <Text style={[styles.chipText, selectedKind === kind && styles.chipTextActive]}>
-                {kind === 'symposium' ? 'Symposia' : kind.charAt(0).toUpperCase() + kind.slice(1) + 's'}
+                {kindLabel(kind)}
               </Text>
             </TouchableOpacity>
           ))}

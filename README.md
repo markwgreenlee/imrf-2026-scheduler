@@ -2,6 +2,50 @@
 
 A Progressive Web App (PWA) for iOS and Android to search and organize your International Multisensory Research Forum (IMRF) conference schedule, June 24–27, 2026, Genova, Italy. No installation required — works in any phone browser.
 
+
+## What's new in this release
+
+Four features ported from the [ECVP 2026 scheduler](https://github.com/markwgreenlee/ecvp-2026-scheduler),
+which shares this codebase.
+
+### Your schedule reads as an itinerary
+
+The Schedule tab now uses the same cards and day/type filters as Search, ordered by day and start
+time, so anything clashing sits on adjacent rows. Filter to a day and the calendar export covers
+just that day. Clearing always wipes everything, never a filtered subset.
+
+### What's on now
+
+A new **Now** tab lists every session running at this moment with its room, the presentation
+currently on, and your own picks starred. Between sessions it counts down to the next one. Times
+are reckoned in Genova time (Europe/Rome), so it stays right even if your phone's clock is on another zone.
+
+### Move your schedule between devices
+
+Settings shows a QR code encoding your selection, and a built-in scanner reads one from another
+screen. Scanning inside the app matters: the schedule lands in *this* app, including when it is
+installed on an iPhone Home Screen, where a camera-app scan would drop the import into Safari
+instead. Links carry only presentation ids, so the receiving device renders from its own copy of
+the programme. A link from the ECVP or IMRF scheduler is rejected rather than half-read.
+
+### Reminders that work with the app closed
+
+Pick a lead time under **Settings → Session Reminders**, then export from the Schedule tab. On an
+iPhone, iPad or Mac the first button reads **Apple Calendar**; elsewhere **Calendar file (.ics)**.
+Either hands over the whole schedule at once with an alarm on every event, and re-exporting later
+updates those events rather than duplicating them.
+
+The app cannot text you or push a notification on its own: that needs a server, and a web app
+cannot schedule a local notification for later. Handing the reminder to your calendar is what gets
+an alert to a pocketed phone without one.
+
+## For developers
+
+All three schedulers (IMRF, ECVP and IMRF) share one codebase. Everything conference-specific
+lives in `src/config/conference.js` — timezone, city name, share tag, presentation-type labels,
+poster grouping, calendar identifiers. The modules under `src/utils/` are byte-identical across the
+three repositories, so porting a fix means copying the utils and editing that one file.
+
 ## For Conference Attendees
 
 ### Use the web version — no installation required

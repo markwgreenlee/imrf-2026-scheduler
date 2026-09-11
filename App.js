@@ -25,11 +25,14 @@ import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
+import NowScreen from './src/screens/NowScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import ScheduleScreen from './src/screens/ScheduleScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { DataProvider } from './src/context/DataContext';
 import InstallPrompt from './src/components/InstallPrompt';
+import ImportPrompt from './src/components/ImportPrompt';
+import StartingSoon from './src/components/StartingSoon';
 
 const Tab = createBottomTabNavigator();
 
@@ -55,12 +58,15 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <DataProvider>
         <InstallPrompt />
+        <ImportPrompt />
+        <StartingSoon />
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
               tabBarIcon: ({ color, size }) => {
                 let iconName;
-                if (route.name === 'Search') iconName = 'magnify';
+                if (route.name === 'Now') iconName = 'clock-outline';
+                else if (route.name === 'Search') iconName = 'magnify';
                 else if (route.name === 'Schedule') iconName = 'calendar-check';
                 else if (route.name === 'Settings') iconName = 'cog';
                 return <Icon name={iconName} size={size} color={color} />;
@@ -77,6 +83,14 @@ export default function App() {
               },
             })}
           >
+            <Tab.Screen
+              name="Now"
+              component={NowScreen}
+              options={{
+                title: "What's On Now",
+                tabBarLabel: 'Now',
+              }}
+            />
             <Tab.Screen
               name="Search"
               component={SearchScreen}

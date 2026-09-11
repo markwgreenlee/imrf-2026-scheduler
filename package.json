@@ -1,6 +1,6 @@
 {
   "name": "imrf-2026-scheduler",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "IMRF 2026 Schedule Organizer - Native iOS & Android App",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -28,6 +28,8 @@
     "expo-updates": "~56.0.15",
     "ical.js": "^2.0.0",
     "lodash.throttle": "^4.1.1",
+    "jsqr": "^1.4.0",
+    "qrcode-generator": "^2.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
