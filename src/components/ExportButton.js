@@ -4,7 +4,7 @@ import {
   Modal, Platform,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem, setItem } from '../utils/storage';
 import { getEventTimes, eventTitle, buildIcs } from '../utils/calendar';
 import { isIOS, isApple } from '../utils/platform';
 import conference from '../config/conference';
@@ -20,6 +20,9 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
   const [googleIndex, setGoogleIndex] = useState(null); // null = modal hidden
   const [exportQueue, setExportQueue] = useState([]);
   const [dupWarning, setDupWarning] = useState(null); // { dupeCount, freshCount }
+  // Shown under the buttons. Every failure path used to return silently, which
+  // is indistinguishable from the button not working at all.
+  const [notice, setNotice] = useState('');
 
   const authorsString = (session) =>
     Array.isArray(session.authors)
@@ -55,10 +58,10 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
 
   const markExported = async (sessionId) => {
     try {
-      const raw = await AsyncStorage.getItem(GOOGLE_EXPORTED_KEY);
+      const raw = await getItem(GOOGLE_EXPORTED_KEY);
       const ids = raw ? JSON.parse(raw) : [];
       if (!ids.includes(sessionId)) {
-        await AsyncStorage.setItem(GOOGLE_EXPORTED_KEY, JSON.stringify([...ids, sessionId]));
+        await setItem(GOOGLE_EXPORTED_KEY, JSON.stringify([...ids, sessionId]));
       }
     } catch (_) {}
   };
@@ -66,7 +69,7 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
   const exportToGoogle = async () => {
     if (sessions.length === 0) return;
     try {
-      const raw = await AsyncStorage.getItem(GOOGLE_EXPORTED_KEY);
+      const raw = await getItem(GOOGLE_EXPORTED_KEY);
       const exportedIds = new Set(raw ? JSON.parse(raw) : []);
       const dupes = sessions.filter(s => exportedIds.has(s.id));
       const fresh = sessions.filter(s => !exportedIds.has(s.id));
@@ -203,29 +206,46 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
   const ICS_NAME = conference.icsFileName;
 
   const addToCalendar = async () => {
-    if (sessions.length === 0) return;
-    const text = buildIcs(sessions, reminderMinutes);
+    setNotice('');
+    if (sessions.length === 0) {
+      setNotice('Nothing selected to export.');
+      return;
+    }
+
+    let text;
+    try {
+      text = buildIcs(sessions, reminderMinutes);
+    } catch (err) {
+      setNotice(`Could not build the calendar file: ${err && err.message ? err.message : 'unknown error'}`);
+      return;
+    }
 
     if (isIOS() && typeof File !== 'undefined' && navigator.canShare) {
       try {
         const file = new File([text], ICS_NAME, { type: 'text/calendar' });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'ECVP 2026 schedule' });
+          await navigator.share({ files: [file], title: conference.icsProductId });
           return;
         }
       } catch (err) {
-        // The user closing the share sheet is a decision, not a failure.
-        if (err && err.name === 'AbortError') return;
+        // Closing the share sheet is a decision, not a failure — but say so,
+        // because an unexplained no-op reads as a broken button.
+        if (err && err.name === 'AbortError') {
+          setNotice('Export cancelled.');
+          return;
+        }
       }
     }
 
     let url;
     try {
       url = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
-    } catch (_) {
+    } catch (err) {
+      setNotice('This browser would not let the app build the file. Try a different browser.');
       return;
     }
 
+    let delivered = false;
     try {
       const link = document.createElement('a');
       if ('download' in link) {
@@ -235,12 +255,19 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      } else {
-        window.open(url, '_blank');
+        delivered = true;
       }
-    } catch (_) {
-      try { window.open(url, '_blank'); } catch (_) {}
+    } catch (_) {}
+
+    if (!delivered) {
+      try {
+        delivered = !!window.open(url, '_blank');
+      } catch (_) {}
     }
+
+    setNotice(delivered
+      ? `Saved ${ICS_NAME} — open it to add ${sessions.length} event${sessions.length !== 1 ? 's' : ''} to your calendar. Check your Downloads if it does not open by itself.`
+      : 'The browser blocked the download. Allow downloads for this site and try again.');
 
     // Long enough for the browser to have taken the data.
     setTimeout(() => { try { URL.revokeObjectURL(url); } catch (_) {} }, 30000);
@@ -258,6 +285,7 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
               {isApple() ? 'Apple Calendar' : 'Calendar file (.ics)'}
             </Text>
           </TouchableOpacity>
+          {notice ? <Text style={styles.notice}>{notice}</Text> : null}
           <Text style={styles.icsNote}>
             {isApple()
               ? `Adds all ${sessions.length} at once — choose Add All when your calendar opens.`
@@ -368,6 +396,16 @@ const styles = StyleSheet.create({
   googleButton: { backgroundColor: '#4285f4' },
   appleButton:  { backgroundColor: '#000' },
   icsButton:    { backgroundColor: '#2f855a' },
+  notice: {
+    fontSize: 11,
+    color: '#186078',
+    lineHeight: 15,
+    textAlign: 'center',
+    backgroundColor: '#f0f4ff',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+  },
   icsNote: {
     fontSize: 10,
     color: '#777',

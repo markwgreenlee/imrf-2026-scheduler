@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getItem, setItem } from '../utils/storage';
 import imrfData from '../../assets/imrf-data.json';
 import {
   readShareFragment,
@@ -50,14 +50,14 @@ export const DataProvider = ({ children }) => {
         setAllSessions(imrfData);
         
         // Load previously selected sessions
-        const saved = await AsyncStorage.getItem('selectedSessions');
+        const saved = await getItem('selectedSessions');
         if (saved) {
           setSelectedSessions(reconcileSaved(JSON.parse(saved), imrfData));
         }
 
         // Arriving via a shared link: hold the selection for confirmation
         // rather than applying it, since import can overwrite a schedule.
-        const savedReminder = await AsyncStorage.getItem('reminderMinutes');
+        const savedReminder = await getItem('reminderMinutes');
         if (savedReminder !== null) {
           const parsed = Number(savedReminder);
           if (!Number.isNaN(parsed)) setReminderMinutes(parsed);
@@ -80,7 +80,7 @@ export const DataProvider = ({ children }) => {
 
   // Save selected sessions when they change
   useEffect(() => {
-    AsyncStorage.setItem('selectedSessions', JSON.stringify(selectedSessions));
+    setItem('selectedSessions', JSON.stringify(selectedSessions));
   }, [selectedSessions]);
 
   const toggleSession = useCallback((session) => {
@@ -119,7 +119,7 @@ export const DataProvider = ({ children }) => {
 
   const changeReminderMinutes = useCallback((minutes) => {
     setReminderMinutes(minutes);
-    AsyncStorage.setItem('reminderMinutes', String(minutes)).catch(() => {});
+    setItem('reminderMinutes', String(minutes)).catch(() => {});
   }, []);
 
   // A code scanned or pasted inside the app takes the same route as a shared
