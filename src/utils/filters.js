@@ -5,6 +5,11 @@ import conference from '../config/conference';
 
 const KIND_ORDER = conference.kindOrder;
 const KIND_LABELS = conference.kindLabels;
+const KIND_ALIAS = conference.kindAlias || {};
+
+// The kind a filter chip matches on. An aliased kind answers to its target's
+// chip, so a symposium overview is found by filtering for Symposia.
+export const effectiveKind = (kind) => KIND_ALIAS[kind] || kind;
 
 // 'symposium_overview' -> 'Symposium overview'. Only reached for kinds the
 // config does not name, which is how an unexpected kind in a new export shows
@@ -40,7 +45,7 @@ export const daysInOrder = (sessions) => {
 };
 
 export const kindsInOrder = (sessions) => {
-  const present = new Set(sessions.map(s => s.kind).filter(Boolean));
+  const present = new Set(sessions.map(s => effectiveKind(s.kind)).filter(Boolean));
   return [
     ...KIND_ORDER.filter(k => present.has(k)),
     ...[...present].filter(k => !KIND_ORDER.includes(k)).sort(),
@@ -48,4 +53,4 @@ export const kindsInOrder = (sessions) => {
 };
 
 export const matchesFilters = (session, day, kind) =>
-  (!day || session.day === day) && (!kind || session.kind === kind);
+  (!day || session.day === day) && (!kind || effectiveKind(session.kind) === kind);

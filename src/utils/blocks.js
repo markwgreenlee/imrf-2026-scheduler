@@ -1,5 +1,6 @@
 import { toMinutes, fromMinutes, gapInMinutes } from './conferenceTime';
 import conference from '../config/conference';
+import { effectiveKind } from './filters';
 
 // "What's on now" works in blocks, not individual presentations: you walk to a
 // room for a session, not for one 15-minute talk.
@@ -19,7 +20,7 @@ const posterSessionName = conference.posterSessionName;
 
 // Some programmes carry a separate record describing a session as a whole.
 // It belongs in that session's block, not a block of its own.
-const blockKind = (s) => (conference.blockKindAlias || {})[s.kind] || s.kind;
+const blockKind = (s) => effectiveKind(s.kind);
 
 const blockKeyFor = (s) => {
   if (s.kind === 'poster') {

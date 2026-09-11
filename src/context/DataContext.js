@@ -6,6 +6,7 @@ import {
   clearShareFragment,
   buildPendingImport,
 } from '../utils/shareCode';
+import { effectiveKind } from '../utils/filters';
 
 export const DataContext = createContext();
 
@@ -151,7 +152,7 @@ export const DataProvider = ({ children }) => {
     }
 
     if (kind) {
-      results = results.filter(s => s.kind === kind);
+      results = results.filter(s => effectiveKind(s.kind) === kind);
     }
 
     return results;
