@@ -20,6 +20,16 @@ A new **Now** tab lists every session running at this moment with its room, the 
 currently on, and your own picks starred. Between sessions it counts down to the next one. Times
 are reckoned in Genova time (Europe/Rome), so it stays right even if your phone's clock is on another zone.
 
+### Author links
+
+In a presentation's detail card, an author with other work at this conference is underlined. Tap the
+name to see everything they are presenting, and tap any of those to jump straight to it.
+
+Names are matched ignoring case, accents, hyphenation and initials, so one person is found whether
+the programme wrote them as "Mark W. Greenlee" or "Mark Greenlee". Roughly three names in four
+appear on only one presentation and stay plain text, so an underline means the person really is
+presenting elsewhere too.
+
 ### Move your schedule between devices
 
 Settings shows a QR code encoding your selection, and a built-in scanner reads one from another

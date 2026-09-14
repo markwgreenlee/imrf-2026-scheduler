@@ -179,6 +179,7 @@ const NowScreen = () => {
         isSelected={detailSession ? selectedIds.has(detailSession.id) : false}
         onToggle={() => detailSession && toggleSession(detailSession)}
         onClose={() => setDetailSession(null)}
+        onNavigate={setDetailSession}
       />
     </View>
   );

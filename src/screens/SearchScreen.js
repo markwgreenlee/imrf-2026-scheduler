@@ -117,6 +117,7 @@ const SearchScreen = () => {
         isSelected={detailSession ? selectedSessions.some(s => s.id === detailSession.id) : false}
         onToggle={() => detailSession && toggleSession(detailSession)}
         onClose={() => setDetailSession(null)}
+        onNavigate={setDetailSession}
       />
     </View>
   );

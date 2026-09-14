@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { getItem, setItem } from '../utils/storage';
 import imrfData from '../../assets/imrf-data.json';
 import {
@@ -7,6 +7,7 @@ import {
   buildPendingImport,
 } from '../utils/shareCode';
 import { effectiveKind } from '../utils/filters';
+import { buildAuthorIndex } from '../utils/authors';
 
 export const DataContext = createContext();
 
@@ -129,6 +130,9 @@ export const DataProvider = ({ children }) => {
     setPendingImport(buildPendingImport(payload, allSessions));
   }, [allSessions]);
 
+  // One pass over the programme, reused by every detail card.
+  const authorIndex = useMemo(() => buildAuthorIndex(allSessions), [allSessions]);
+
   const searchSessions = useCallback((query, day = '', kind = '') => {
     let results = allSessions;
 
@@ -168,6 +172,7 @@ export const DataProvider = ({ children }) => {
         removeSession,
         clearAll,
         searchSessions,
+        authorIndex,
         pendingImport,
         applyImport,
         dismissImport,
