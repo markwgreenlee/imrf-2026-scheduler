@@ -184,7 +184,7 @@ Output goes to `dist/`. Deployed automatically to GitHub Pages via GitHub Action
 
 ### Building a Standalone Native App
 
-To distribute without requiring Expo Go:
+To build a standalone app:
 
 ```bash
 eas build --platform android   # produces .apk / .aab — requires free Expo account

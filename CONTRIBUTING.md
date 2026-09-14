@@ -27,7 +27,7 @@ Contributions are welcome! Here are some ways you can help:
 ## Testing
 
 - Test on both iOS and Android if possible
-- Use Expo Go for quick testing
+- Use `npx expo start --web` for quick testing
 - Report any platform-specific issues
 
 Thank you for contributing! 🙏
