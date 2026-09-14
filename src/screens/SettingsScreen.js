@@ -37,7 +37,8 @@ const SettingsScreen = () => {
           <Text style={styles.cardText}>Version {version}</Text>
           <Text style={styles.cardText}>June 24–27, 2026 · Genova, Italy</Text>
           <Text style={styles.versionNote}>
-            You are using the latest standalone web version — no Expo Go or app download required.
+            Works offline once loaded. Add it to your Home Screen to open it full-screen,
+            like an app.
           </Text>
         </View>
       </View>
