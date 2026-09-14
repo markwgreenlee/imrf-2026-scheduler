@@ -159,6 +159,31 @@ python3 scripts/parse_imrf.py    # requires poppler (pdftotext) and Pillow
 
 This reads the booklet and writes `assets/imrf-data.json`, printing per-type counts and a validation report (keynotes, symposia + symposium talks, talk-session talks, posters, workshops).
 
+### Checking the programme data
+
+```bash
+python3 scripts/validate_data.py                # checks assets/imrf-data.json
+python3 scripts/validate_data.py candidate.json # check a new export first
+```
+
+This runs in CI before every build, so bad data cannot deploy. It is the same script in all three
+schedulers and finds the data file on its own.
+
+It exists because `room`, `day` and `kind` are **identifiers, not labels**. The live view groups
+sessions by room, the filter chips are built from the set of kinds, and days are ordered by their
+date. A value differing only in case silently becomes a second room, a second chip or a second day,
+and reading the file will not catch it — which is exactly how one VSS session came to record
+`Talk Room 1` against the other 110 entries' `TALK ROOM 1`.
+
+It complements `scripts/parse_imrf.py` rather than replacing it: the parser checks what only it can see while
+rebuilding the data (truncated abstracts, board codes, damaged author-affiliation mappings) and is
+run by hand; this runs unattended on every deploy and catches the controlled-vocabulary drift the
+parser does not look for.
+
+Errors (exit 1, stops the deploy): two spellings of one room, day or kind; a day carrying two dates;
+duplicate or missing ids; a time that is not `HH:MM`; a missing date. Warnings (exit 0): stray
+whitespace, empty controlled fields.
+
 ### Regenerating the app icons
 
 ```bash
