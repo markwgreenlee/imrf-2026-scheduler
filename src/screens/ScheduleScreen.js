@@ -232,6 +232,7 @@ const ScheduleScreen = () => {
         isSelected={true}
         onToggle={() => { if (detailSession) { handleRemove(detailSession); setDetailSession(null); } }}
         onClose={() => setDetailSession(null)}
+        onNavigate={setDetailSession}
       />
     </View>
   );

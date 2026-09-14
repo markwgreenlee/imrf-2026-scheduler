@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Modal,
   View,
@@ -9,9 +9,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { DataContext } from '../context/DataContext';
+import { lookupAuthor, hasOtherWork } from '../utils/authors';
+import AuthorSheet from './AuthorSheet';
 import { kindName } from '../utils/filters';
 
-const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
+// onNavigate lets a tapped author lead to one of their other presentations by
+// replacing what this card is showing. Without it the author links are simply
+// not offered, so a screen that has not opted in cannot reach a dead end.
+const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate }) => {
+  const { authorIndex } = useContext(DataContext);
+  const [openAuthor, setOpenAuthor] = useState(null);
   if (!session) return null;
 
   const authorList = Array.isArray(session.authors) ? session.authors : [];
@@ -36,6 +44,7 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
     workshop: 'Workshop',
     talk: 'Talk',
   };
+  const canLinkAuthors = !!(authorIndex && onNavigate);
   const kindColor = KIND_COLORS[session.kind] || '#555';
   // Shared with the filter chips, so a kind this build has never seen reads
   // as itself rather than being mislabelled.
@@ -107,16 +116,35 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
                   : 'Authors'}
               </Text>
               <Text style={styles.authors}>
-                {authorList.map((name, i) => (
-                  <Text key={i}>
-                    {i > 0 ? ', ' : ''}
-                    {name}
-                    {numList && numList[i] ? (
-                      <Text style={styles.superscript}>{numList[i]}</Text>
-                    ) : null}
-                  </Text>
-                ))}
+                {authorList.map((name, i) => {
+                  // Only authors with work beyond this abstract are linked;
+                  // most names appear once, and a link back to the page you
+                  // are already reading looks broken.
+                  const linked = canLinkAuthors && hasOtherWork(authorIndex, name, session.id);
+                  return (
+                    <Text key={i}>
+                      {i > 0 ? ', ' : ''}
+                      <Text
+                        style={linked ? styles.authorLink : null}
+                        onPress={linked
+                          ? () => setOpenAuthor(lookupAuthor(authorIndex, name))
+                          : undefined}
+                        suppressHighlighting={!linked}
+                      >
+                        {name}
+                      </Text>
+                      {numList && numList[i] ? (
+                        <Text style={styles.superscript}>{numList[i]}</Text>
+                      ) : null}
+                    </Text>
+                  );
+                })}
               </Text>
+              {canLinkAuthors && authorList.some(n => hasOtherWork(authorIndex, n, session.id)) ? (
+                <Text style={styles.authorHint}>
+                  Tap an underlined name for their other presentations
+                </Text>
+              ) : null}
               {session.kind === 'symposium_overview' ? (
                 <Text style={styles.organizerNote}>
                   Symposium introduction — presented by the organizers
@@ -169,6 +197,12 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose }) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <AuthorSheet
+          author={openAuthor}
+          currentId={session.id}
+          onClose={() => setOpenAuthor(null)}
+          onSelect={(next) => { setOpenAuthor(null); onNavigate(next); }}
+        />
       </SafeAreaView>
     </Modal>
   );
@@ -265,6 +299,16 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
+  },
+  authorLink: {
+    color: '#1a5fd1',
+    textDecorationLine: 'underline',
+  },
+  authorHint: {
+    fontSize: 11,
+    color: '#999',
+    fontStyle: 'italic',
+    marginTop: 6,
   },
   authors: {
     fontSize: 14,
