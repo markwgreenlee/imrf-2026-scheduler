@@ -159,6 +159,22 @@ python3 scripts/parse_imrf.py    # requires poppler (pdftotext) and Pillow
 
 This reads the booklet and writes `assets/imrf-data.json`, printing per-type counts and a validation report (keynotes, symposia + symposium talks, talk-session talks, posters, workshops).
 
+### Session views
+
+Tapping the session name in a presentation's detail card opens the rest of that session — every talk
+or poster in it, in order, each tappable through to its own abstract. The name carries the count
+(`Motion Perception  ·  all 6`) so it is clear there is something behind it, and it is only a link
+when the session holds more than the presentation being read.
+
+The grouping is `buildBlocks()`, already built for the Now tab, so this reuses the session
+definition rather than inventing a second one: a poster session is one block per hall, and a talk
+session's end is derived from its last talk where the data gives no `session_end`.
+
+The author sheet and the session sheet are one component, `PresentationSheet`. Both want the same
+thing — a list of presentations over the detail card — so they share it, and choosing an entry
+replaces what the card shows rather than stacking another layer. That means author → paper →
+session → another paper walks indefinitely without a pile of sheets to dismiss.
+
 ### Offline at the venue
 
 The service worker splits what it serves in two, because conference WiFi does not fail cleanly —
