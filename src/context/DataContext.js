@@ -5,7 +5,9 @@ import {
   readShareFragment,
   clearShareFragment,
   buildPendingImport,
+  resolveEntries,
 } from '../utils/shareCode';
+import { decodeScheduleFile } from '../utils/scheduleFile';
 import { effectiveKind } from '../utils/filters';
 import { buildAuthorIndex } from '../utils/authors';
 import { buildBlocks } from '../utils/blocks';
@@ -131,6 +133,18 @@ export const DataProvider = ({ children }) => {
     setPendingImport(buildPendingImport(payload, allSessions));
   }, [allSessions]);
 
+  // A saved file takes the same route, so the confirmation and every error
+  // message are identical whether a schedule arrives by link, scan or file.
+  const receiveScheduleFile = useCallback((text) => {
+    const decoded = decodeScheduleFile(text);
+    if (decoded.error) {
+      setPendingImport({ error: decoded.error, conference: decoded.conference });
+      return;
+    }
+    const { found, missing } = resolveEntries(decoded.entries, allSessions);
+    setPendingImport(found.length ? { sessions: found, missing } : { error: 'none-found' });
+  }, [allSessions]);
+
   // One pass over the programme, reused by every detail card.
   const authorIndex = useMemo(() => buildAuthorIndex(allSessions), [allSessions]);
 
@@ -189,6 +203,7 @@ export const DataProvider = ({ children }) => {
         applyImport,
         dismissImport,
         receiveSharePayload,
+        receiveScheduleFile,
         reminderMinutes,
         changeReminderMinutes,
       }}

@@ -6,15 +6,47 @@ import { DataContext } from '../context/DataContext';
 import QRCodeView from '../components/QRCodeView';
 import ScheduleScanner from '../components/ScheduleScanner';
 import { buildShareUrl, appBaseUrl } from '../utils/shareCode';
+import { buildScheduleFile } from '../utils/scheduleFile';
+import { deliverFile, pickTextFile } from '../utils/download';
+import conference from '../config/conference';
 import { sortChronologically, programmeOrder } from '../utils/sortSessions';
 
 const REMINDER_CHOICES = [0, 5, 10, 15, 30];
 
 const SettingsScreen = () => {
   const version = Constants.expoConfig?.version || '1.0.0';
-  const { allSessions, selectedSessions, receiveSharePayload, reminderMinutes,
-          changeReminderMinutes } = useContext(DataContext);
+  const { allSessions, selectedSessions, receiveSharePayload, receiveScheduleFile,
+          reminderMinutes, changeReminderMinutes } = useContext(DataContext);
   const [scanning, setScanning] = useState(false);
+  const [fileNotice, setFileNotice] = useState('');
+
+  const saveScheduleFile = async () => {
+    setFileNotice('');
+    if (selectedSessions.length === 0) return;
+    const ordered = sortChronologically(selectedSessions, programmeOrder(allSessions));
+    const outcome = await deliverFile({
+      text: buildScheduleFile(ordered),
+      filename: conference.scheduleFileName,
+      type: 'application/json',
+      title: 'My schedule',
+    });
+    const n = ordered.length;
+    setFileNotice({
+      shared: `Shared ${conference.scheduleFileName} with ${n} presentation${n !== 1 ? 's' : ''}.`,
+      downloaded: `Saved ${conference.scheduleFileName} with ${n} presentation${n !== 1 ? 's' : ''}. Check your Downloads.`,
+      opened: `Opened ${conference.scheduleFileName} — save it from there.`,
+      cancelled: 'Save cancelled.',
+      unsupported: 'This browser would not let the app build the file.',
+      blocked: 'The browser blocked the download. Allow downloads for this site and try again.',
+    }[outcome]);
+  };
+
+  const loadScheduleFile = async () => {
+    setFileNotice('');
+    const text = await pickTextFile('application/json,.json');
+    if (text === null) return;          // picker closed without choosing
+    receiveScheduleFile(text);
+  };
 
   // Share the schedule in itinerary order, so the receiving device shows the
   // same sequence rather than whatever order things happened to be added in.
@@ -137,6 +169,10 @@ const SettingsScreen = () => {
             <Icon name="qrcode-scan" size={18} color="#fff" />
             <Text style={styles.scanButtonText}>Scan a code</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.fileButton} onPress={loadScheduleFile}>
+            <Icon name="file-upload-outline" size={18} color="#186078" />
+            <Text style={styles.fileButtonText}>Load a saved file</Text>
+          </TouchableOpacity>
 
           <View style={styles.divider} />
 
@@ -162,8 +198,19 @@ const SettingsScreen = () => {
               </Text>
               <Text style={styles.shareLinkLabel}>The same link as text:</Text>
               <Text style={styles.shareLink} selectable>{shareUrl}</Text>
+
+              <TouchableOpacity style={styles.fileButton} onPress={saveScheduleFile}>
+                <Icon name="file-download-outline" size={18} color="#186078" />
+                <Text style={styles.fileButtonText}>Save as a file</Text>
+              </TouchableOpacity>
+              <Text style={styles.shareSteps}>
+                A file is the one that keeps: it survives clearing your browser data, and it can be
+                loaded on any of your devices. It also stores each presentation's title, so it still
+                works if the organisers renumber the programme.
+              </Text>
             </>
           )}
+          {fileNotice ? <Text style={styles.fileNotice}>{fileNotice}</Text> : null}
         </View>
       </View>
 
@@ -309,6 +356,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#186078', paddingVertical: 12, borderRadius: 8, marginTop: 10,
   },
   scanButtonText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  fileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#186078',
+    paddingVertical: 11,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  fileButtonText: {
+    color: '#186078',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  fileNotice: {
+    fontSize: 11,
+    color: '#186078',
+    lineHeight: 15,
+    textAlign: 'center',
+    backgroundColor: '#f0f4ff',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginTop: 12,
+  },
   shareLead: { fontSize: 13, color: '#333', marginBottom: 12 },
   qrWrap: { alignItems: 'center', paddingVertical: 8 },
   shareSteps: { fontSize: 12, color: '#666', lineHeight: 18, marginTop: 12 },

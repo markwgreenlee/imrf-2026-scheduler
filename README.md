@@ -175,6 +175,26 @@ thing — a list of presentations over the detail card — so they share it, and
 replaces what the card shows rather than stacking another layer. That means author → paper →
 session → another paper walks indefinitely without a pile of sheets to dismiss.
 
+### Saving a schedule as a file
+
+**Settings → Save as a file** writes your selection as JSON; **Load a saved file** reads one back.
+It is the durable counterpart to the QR code: a QR moves a schedule between two devices in the
+room, a file survives clearing your browser data and can be kept, mailed or copied anywhere.
+
+The file carries each presentation's **id, day and title**, where the QR carries ids only — a QR has
+to fit in a scannable square, a file does not. That matters because ids are not permanent: the ECVP
+poster codes were renumbered mid-August 2026. Loading resolves by id first and falls back to day
+plus title, so a schedule saved before a renumbering still loads afterwards. Verified against a copy
+of the programme with every id changed: the file finds all of them, the id-only path finds none.
+
+A file is tagged with the conference, so one app rejects another's with the same message a foreign
+QR gets. Every route in — shared link, scan, file — goes through the same confirmation sheet and the
+same error names.
+
+`src/utils/download.js` holds the delivery chain shared by this and the calendar export: the iOS
+share sheet, then a download, then opening the file, since downloads are least dependable inside a
+Home Screen install and only the first route can be feature-detected.
+
 ### Offline at the venue
 
 The service worker splits what it serves in two, because conference WiFi does not fail cleanly —

@@ -6,7 +6,8 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { getItem, setItem } from '../utils/storage';
 import { getEventTimes, eventTitle, buildIcs } from '../utils/calendar';
-import { isIOS, isApple } from '../utils/platform';
+import { isApple } from '../utils/platform';
+import { deliverFile } from '../utils/download';
 import conference from '../config/conference';
 import { zonedTimeToUtc } from '../utils/conferenceTime';
 
@@ -220,57 +221,22 @@ const ExportButton = ({ sessions, reminderMinutes = 0 }) => {
       return;
     }
 
-    if (isIOS() && typeof File !== 'undefined' && navigator.canShare) {
-      try {
-        const file = new File([text], ICS_NAME, { type: 'text/calendar' });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: conference.icsProductId });
-          return;
-        }
-      } catch (err) {
-        // Closing the share sheet is a decision, not a failure — but say so,
-        // because an unexplained no-op reads as a broken button.
-        if (err && err.name === 'AbortError') {
-          setNotice('Export cancelled.');
-          return;
-        }
-      }
-    }
+    const outcome = await deliverFile({
+      text,
+      filename: ICS_NAME,
+      type: 'text/calendar',
+      title: conference.icsProductId,
+    });
 
-    let url;
-    try {
-      url = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
-    } catch (err) {
-      setNotice('This browser would not let the app build the file. Try a different browser.');
-      return;
-    }
-
-    let delivered = false;
-    try {
-      const link = document.createElement('a');
-      if ('download' in link) {
-        link.href = url;
-        link.download = ICS_NAME;
-        link.rel = 'noopener';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        delivered = true;
-      }
-    } catch (_) {}
-
-    if (!delivered) {
-      try {
-        delivered = !!window.open(url, '_blank');
-      } catch (_) {}
-    }
-
-    setNotice(delivered
-      ? `Saved ${ICS_NAME} — open it to add ${sessions.length} event${sessions.length !== 1 ? 's' : ''} to your calendar. Check your Downloads if it does not open by itself.`
-      : 'The browser blocked the download. Allow downloads for this site and try again.');
-
-    // Long enough for the browser to have taken the data.
-    setTimeout(() => { try { URL.revokeObjectURL(url); } catch (_) {} }, 30000);
+    const n = sessions.length;
+    setNotice({
+      shared: `Shared ${ICS_NAME} — choose Calendar to add ${n} event${n !== 1 ? 's' : ''}.`,
+      downloaded: `Saved ${ICS_NAME} — open it to add ${n} event${n !== 1 ? 's' : ''} to your calendar. Check your Downloads if it does not open by itself.`,
+      opened: `Opened ${ICS_NAME} — add it to your calendar from there.`,
+      cancelled: 'Export cancelled.',
+      unsupported: 'This browser would not let the app build the file. Try a different browser.',
+      blocked: 'The browser blocked the download. Allow downloads for this site and try again.',
+    }[outcome]);
   };
 
   const isLast = googleIndex !== null && googleIndex === exportQueue.length - 1;
