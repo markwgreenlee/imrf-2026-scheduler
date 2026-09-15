@@ -159,6 +159,43 @@ python3 scripts/parse_imrf.py    # requires poppler (pdftotext) and Pillow
 
 This reads the booklet and writes `assets/imrf-data.json`, printing per-type counts and a validation report (keynotes, symposia + symposium talks, talk-session talks, posters, workshops).
 
+### Offline at the venue
+
+The service worker splits what it serves in two, because conference WiFi does not fail cleanly —
+it stalls, and a worker that waits on a socket that never closes looks like a frozen app rather
+than an error.
+
+- **Content-addressed files** — the JS bundle, icon fonts, images — are served **cache-first**.
+  Their filename carries a hash, so the bytes behind a URL can never change and a cached copy is
+  never stale. This is almost the whole payload, so the app opens instantly and is immune to a bad
+  network.
+- **`index.html`** is served **network-first with a 2-second timeout**, falling back to cache. It
+  is tiny, and it is how a new programme reaches a device: the data is compiled into the bundle, so
+  a data change produces a new bundle hash and therefore a new `index.html`.
+
+Measured against a server deliberately stalled for 30 seconds: the previous worker rendered in
+**31.3 s**, this one in **3.3 s**.
+
+On install the worker reads the shell and pre-caches the hashed files it references. Without that,
+the bundle was only cached on a *second* visit — a worker does not control the page that installs
+it — which quietly contradicted the advice to open the app once before travelling. One visit is now
+enough: verified by wiping the browser's HTTP cache, killing the server, and reloading.
+
+When the timeout fires, the cached page is served and the request continues in the background. If
+what arrives differs from what was served, the page shows *"An updated programme is available"* with
+a reload. That covers the attendee who opened the app before the programme was frozen.
+
+Two things this got wrong on the way, worth not repeating:
+
+- `event.waitUntil()` must be called **synchronously** in the fetch handler. Called after an `await`
+  the event no longer accepts it, so nothing keeps the worker alive, it is killed the moment it
+  answers from cache, and the background request dies silently with it.
+- The response used for the comparison must be cloned **before** the cached response is returned.
+  Once a body is being consumed, cloning it throws and the notification is lost.
+
+The cache name carries the app version, stamped into `sw.js` at deploy time. It was previously
+hard-coded and had drifted several releases out of date, so old caches were never discarded.
+
 ### Checking the programme data
 
 ```bash
