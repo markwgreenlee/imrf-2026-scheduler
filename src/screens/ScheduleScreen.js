@@ -18,6 +18,7 @@ import SessionDetailModal from '../components/SessionDetailModal';
 import { sortChronologically, programmeOrder } from '../utils/sortSessions';
 import { daysInOrder, kindsInOrder, kindLabel, matchesFilters } from '../utils/filters';
 import { eventTitle } from '../utils/calendar';
+import { LEVELS, levelLabel, levelMark, markFor, matchesLevel } from '../utils/marks';
 import { zonedTimeToUtc } from '../utils/conferenceTime';
 import conference from '../config/conference';
 
@@ -39,12 +40,13 @@ const removeFromAppleCalendar = async (session) => {
 };
 
 const ScheduleScreen = () => {
-  const { allSessions, selectedSessions, removeSession, clearAll, reminderMinutes } =
+  const { allSessions, selectedSessions, removeSession, clearAll, reminderMinutes, marks } =
     useContext(DataContext);
   const [detailSession, setDetailSession] = useState(null);
   const [confirmingClear, setConfirmingClear] = useState(false);
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedKind, setSelectedKind] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState('');
 
   const days  = useMemo(() => daysInOrder(allSessions), [allSessions]);
   const kinds = useMemo(() => kindsInOrder(allSessions), [allSessions]);
@@ -57,18 +59,22 @@ const ScheduleScreen = () => {
   );
 
   const visible = useMemo(
-    () => schedule.filter(s => matchesFilters(s, selectedDay, selectedKind)),
-    [schedule, selectedDay, selectedKind]
+    () => schedule.filter(s =>
+      matchesFilters(s, selectedDay, selectedKind) && matchesLevel(marks, s.id, selectedLevel)),
+    [schedule, selectedDay, selectedKind, selectedLevel, marks]
   );
 
-  const isFiltered = Boolean(selectedDay || selectedKind);
-  const scopeLabel = [selectedDay, selectedKind && kindLabel(selectedKind)]
-    .filter(Boolean)
-    .join(' · ');
+  const isFiltered = Boolean(selectedDay || selectedKind || selectedLevel);
+  const scopeLabel = [
+    selectedDay,
+    selectedKind && kindLabel(selectedKind),
+    selectedLevel && levelLabel(selectedLevel),
+  ].filter(Boolean).join(' · ');
 
   const toggleDay  = (day)  => setSelectedDay(prev => prev === day ? '' : day);
   const toggleKind = (kind) => setSelectedKind(prev => prev === kind ? '' : kind);
-  const clearFilters = () => { setSelectedDay(''); setSelectedKind(''); };
+  const toggleLevel = (level) => setSelectedLevel(prev => prev === level ? '' : level);
+  const clearFilters = () => { setSelectedDay(''); setSelectedKind(''); setSelectedLevel(''); };
 
   const handleRemove = (session) => {
     if (Platform.OS === 'web') {
@@ -171,6 +177,23 @@ const ScheduleScreen = () => {
             ))}
           </View>
         </View>
+
+        <View style={styles.filtersRow}>
+          <Text style={styles.filterLabel}>Level:</Text>
+          <View style={styles.chipRow}>
+            {LEVELS.map(level => (
+              <TouchableOpacity
+                key={level}
+                style={[styles.chip, selectedLevel === level && styles.chipActive]}
+                onPress={() => toggleLevel(level)}
+              >
+                <Text style={[styles.chipText, selectedLevel === level && styles.chipTextActive]}>
+                  {levelMark(level) ? `${levelMark(level)} ` : ''}{levelLabel(level)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       </View>
 
       {visible.length === 0 ? (
@@ -187,7 +210,14 @@ const ScheduleScreen = () => {
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => setDetailSession(item)}>
-              <SessionCard session={item} isSelected={true} />
+              <SessionCard
+                session={item}
+                isSelected={true}
+                mark={(() => {
+                  const m = markFor(marks, item.id);
+                  return { marker: levelMark(m.level), note: m.note };
+                })()}
+              />
             </TouchableOpacity>
           )}
           contentContainerStyle={styles.list}

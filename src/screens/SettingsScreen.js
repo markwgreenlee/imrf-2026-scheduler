@@ -16,7 +16,7 @@ const REMINDER_CHOICES = [0, 5, 10, 15, 30];
 const SettingsScreen = () => {
   const version = Constants.expoConfig?.version || '1.0.0';
   const { allSessions, selectedSessions, receiveSharePayload, receiveScheduleFile,
-          reminderMinutes, changeReminderMinutes } = useContext(DataContext);
+          reminderMinutes, changeReminderMinutes, marks } = useContext(DataContext);
   const [scanning, setScanning] = useState(false);
   const [fileNotice, setFileNotice] = useState('');
 
@@ -25,7 +25,7 @@ const SettingsScreen = () => {
     if (selectedSessions.length === 0) return;
     const ordered = sortChronologically(selectedSessions, programmeOrder(allSessions));
     const outcome = await deliverFile({
-      text: buildScheduleFile(ordered),
+      text: buildScheduleFile(ordered, marks),
       filename: conference.scheduleFileName,
       type: 'application/json',
       title: 'My schedule',
@@ -53,8 +53,8 @@ const SettingsScreen = () => {
   const shareUrl = useMemo(() => {
     if (selectedSessions.length === 0) return '';
     const ordered = sortChronologically(selectedSessions, programmeOrder(allSessions));
-    return buildShareUrl(ordered, appBaseUrl());
-  }, [selectedSessions, allSessions]);
+    return buildShareUrl(ordered, appBaseUrl(), marks);
+  }, [selectedSessions, allSessions, marks]);
 
   const handleOpenURL = (url) => {
     Linking.openURL(url).catch(() => {});
