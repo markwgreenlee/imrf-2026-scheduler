@@ -11,15 +11,16 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { DataContext } from '../context/DataContext';
 import { lookupAuthor, hasOtherWork } from '../utils/authors';
-import AuthorSheet from './AuthorSheet';
+import PresentationSheet from './PresentationSheet';
 import { kindName } from '../utils/filters';
 
 // onNavigate lets a tapped author lead to one of their other presentations by
 // replacing what this card is showing. Without it the author links are simply
 // not offered, so a screen that has not opted in cannot reach a dead end.
 const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate }) => {
-  const { authorIndex } = useContext(DataContext);
-  const [openAuthor, setOpenAuthor] = useState(null);
+  const { authorIndex, blockIndex } = useContext(DataContext);
+  // One sheet, opened either for an author or for a session.
+  const [sheet, setSheet] = useState(null);
   if (!session) return null;
 
   const authorList = Array.isArray(session.authors) ? session.authors : [];
@@ -45,6 +46,34 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
     talk: 'Talk',
   };
   const canLinkAuthors = !!(authorIndex && onNavigate);
+
+  // The rest of this presentation's session, if it has any company.
+  const block = blockIndex && session ? blockIndex.get(session.id) : null;
+  const canOpenSession = !!(onNavigate && block && block.items.length > 1);
+
+  const openAuthorSheet = (name) => {
+    const entry = lookupAuthor(authorIndex, name);
+    if (!entry) return;
+    const count = entry.sessions.length;
+    setSheet({
+      heading: entry.display,
+      subheading: `${count} presentation${count !== 1 ? 's' : ''} at this conference`,
+      sessions: entry.sessions,
+    });
+  };
+
+  const openSessionSheet = () => {
+    if (!canOpenSession) return;
+    const count = block.items.length;
+    const where = [block.day, `${block.start}–${block.end}`, block.room]
+      .filter(Boolean)
+      .join(' · ');
+    setSheet({
+      heading: block.title,
+      subheading: `${count} presentation${count !== 1 ? 's' : ''}${where ? ` · ${where}` : ''}`,
+      sessions: block.items,
+    });
+  };
   const kindColor = KIND_COLORS[session.kind] || '#555';
   // Shared with the filter chips, so a kind this build has never seen reads
   // as itself rather than being mislabelled.
@@ -81,7 +110,14 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
           </Text>
 
           {session.session_title ? (
-            <Text style={styles.sessionTitle}>{session.session_title}</Text>
+            <Text
+              style={[styles.sessionTitle, canOpenSession && styles.sessionTitleLink]}
+              onPress={canOpenSession ? openSessionSheet : undefined}
+              suppressHighlighting={!canOpenSession}
+            >
+              {session.session_title}
+              {canOpenSession ? `  ·  all ${block.items.length}` : ''}
+            </Text>
           ) : null}
 
           <View style={styles.metaBox}>
@@ -126,9 +162,7 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
                       {i > 0 ? ', ' : ''}
                       <Text
                         style={linked ? styles.authorLink : null}
-                        onPress={linked
-                          ? () => setOpenAuthor(lookupAuthor(authorIndex, name))
-                          : undefined}
+                        onPress={linked ? () => openAuthorSheet(name) : undefined}
                         suppressHighlighting={!linked}
                       >
                         {name}
@@ -197,11 +231,13 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
             </Text>
           </TouchableOpacity>
         </View>
-        <AuthorSheet
-          author={openAuthor}
+        <PresentationSheet
+          heading={sheet && sheet.heading}
+          subheading={sheet && sheet.subheading}
+          sessions={sheet && sheet.sessions}
           currentId={session.id}
-          onClose={() => setOpenAuthor(null)}
-          onSelect={(next) => { setOpenAuthor(null); onNavigate(next); }}
+          onClose={() => setSheet(null)}
+          onSelect={(next) => { setSheet(null); onNavigate(next); }}
         />
       </SafeAreaView>
     </Modal>
@@ -299,6 +335,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginBottom: 6,
+  },
+  sessionTitleLink: {
+    color: '#1a5fd1',
+    textDecorationLine: 'underline',
   },
   authorLink: {
     color: '#1a5fd1',

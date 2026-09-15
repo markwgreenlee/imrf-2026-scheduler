@@ -8,6 +8,7 @@ import {
 } from '../utils/shareCode';
 import { effectiveKind } from '../utils/filters';
 import { buildAuthorIndex } from '../utils/authors';
+import { buildBlocks } from '../utils/blocks';
 
 export const DataContext = createContext();
 
@@ -133,6 +134,16 @@ export const DataProvider = ({ children }) => {
   // One pass over the programme, reused by every detail card.
   const authorIndex = useMemo(() => buildAuthorIndex(allSessions), [allSessions]);
 
+  // Which session block each presentation belongs to, so a detail card can
+  // offer the rest of its session without rebuilding the grouping.
+  const blockIndex = useMemo(() => {
+    const index = new Map();
+    for (const block of buildBlocks(allSessions)) {
+      for (const item of block.items) index.set(item.id, block);
+    }
+    return index;
+  }, [allSessions]);
+
   const searchSessions = useCallback((query, day = '', kind = '') => {
     let results = allSessions;
 
@@ -173,6 +184,7 @@ export const DataProvider = ({ children }) => {
         clearAll,
         searchSessions,
         authorIndex,
+        blockIndex,
         pendingImport,
         applyImport,
         dismissImport,

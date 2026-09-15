@@ -3,23 +3,24 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { kindName } from '../utils/filters';
 
-// Rendered as an overlay inside the detail card rather than as its own Modal.
-// A modal within a pageSheet modal is unreliable on iOS, and an overlay keeps
-// the dismissal behaviour obvious: one close button, one layer.
-const AuthorSheet = ({ author, currentId, onSelect, onClose }) => {
-  if (!author) return null;
-
-  const count = author.sessions.length;
+// A list of presentations over the detail card — everything by one author, or
+// everything in one session. Both want the same thing, so they share it.
+//
+// Rendered as an overlay rather than its own Modal: a modal within a pageSheet
+// modal is unreliable on iOS, and an overlay keeps the dismissal behaviour
+// obvious — one close button, one layer. Choosing a presentation replaces what
+// the card underneath is showing rather than stacking, so following authors and
+// sessions never piles up layers to dismiss.
+const PresentationSheet = ({ heading, subheading, sessions, currentId, onSelect, onClose }) => {
+  if (!sessions || !sessions.length) return null;
 
   return (
     <View style={styles.overlay}>
       <View style={styles.sheet}>
         <View style={styles.header}>
           <View style={styles.headerText}>
-            <Text style={styles.name} numberOfLines={2}>{author.display}</Text>
-            <Text style={styles.count}>
-              {count} presentation{count !== 1 ? 's' : ''} at this conference
-            </Text>
+            <Text style={styles.name} numberOfLines={3}>{heading}</Text>
+            <Text style={styles.count}>{subheading}</Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Icon name="close" size={22} color="#555" />
@@ -27,7 +28,7 @@ const AuthorSheet = ({ author, currentId, onSelect, onClose }) => {
         </View>
 
         <ScrollView contentContainerStyle={styles.list}>
-          {author.sessions.map(session => {
+          {sessions.map(session => {
             const isCurrent = session.id === currentId;
             return (
               <TouchableOpacity
@@ -108,4 +109,4 @@ const styles = StyleSheet.create({
   currentNote: { fontSize: 11, color: '#1d4ed8', fontStyle: 'italic', marginTop: 6 },
 });
 
-export default AuthorSheet;
+export default PresentationSheet;
