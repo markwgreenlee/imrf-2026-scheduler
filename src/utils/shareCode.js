@@ -7,18 +7,28 @@
 // shared schedule stays between the two devices involved.
 
 import conference from '../config/conference';
+import { levelCode, levelFromCode, DEFAULT_LEVEL } from './marks';
 
 // Each app sets its own tag, so a link from one is rejected by another rather
 // than half-read.
 const CONFERENCE = conference.shareTag;
-const FORMAT = '1';
+// 1 carried bare ids. 2 may suffix an id with its level. Both are accepted on
+// the way in, so a link made by an older build still works.
+const FORMAT = '2';
+const ACCEPTED_FORMATS = ['1', '2'];
+const LEVEL_SEPARATOR = '!';
 const PREFIX = 's=';
 
-export const encodeSelection = (sessions) =>
-  `${CONFERENCE}.${FORMAT}.${sessions.map(s => s.id).join(',')}`;
+// A level rides along as a one-letter suffix; the default level adds nothing,
+// so the common case costs no extra characters in the code.
+export const encodeSelection = (sessions, marks) =>
+  `${CONFERENCE}.${FORMAT}.${sessions.map(s => {
+    const code = marks ? levelCode((marks[s.id] || {}).level) : '';
+    return code ? `${s.id}${LEVEL_SEPARATOR}${code}` : s.id;
+  }).join(',')}`;
 
-export const buildShareUrl = (sessions, baseUrl) =>
-  `${baseUrl}#${PREFIX}${encodeSelection(sessions)}`;
+export const buildShareUrl = (sessions, baseUrl, marks) =>
+  `${baseUrl}#${PREFIX}${encodeSelection(sessions, marks)}`;
 
 // -> { ids } on success, { error, conference? } otherwise.
 export const decodeSelection = (payload) => {
@@ -26,9 +36,19 @@ export const decodeSelection = (payload) => {
   const [conference, format, ...rest] = payload.trim().split('.');
   if (!conference || !format || rest.length === 0) return { error: 'unreadable' };
   if (conference !== CONFERENCE) return { error: 'wrong-conference', conference };
-  if (format !== FORMAT) return { error: 'wrong-format' };
-  const ids = rest.join('.').split(',').map(s => s.trim()).filter(Boolean);
-  return ids.length ? { ids } : { error: 'empty' };
+  if (!ACCEPTED_FORMATS.includes(format)) return { error: 'wrong-format' };
+
+  const tokens = rest.join('.').split(',').map(s => s.trim()).filter(Boolean);
+  const ids = [];
+  const levels = {};
+  for (const token of tokens) {
+    const [id, code] = token.split(LEVEL_SEPARATOR);
+    if (!id) continue;
+    ids.push(id);
+    const level = levelFromCode(code);
+    if (level !== DEFAULT_LEVEL) levels[id] = level;
+  }
+  return ids.length ? { ids, levels } : { error: 'empty' };
 };
 
 // The address to build share links against. Taken from the browser so local
@@ -103,7 +123,9 @@ export const buildPendingImport = (payload, sessions) => {
     return { error: decoded.error, conference: decoded.conference };
   }
   const { found, missing } = resolveIds(decoded.ids, sessions);
-  return found.length ? { sessions: found, missing } : { error: 'none-found' };
+  return found.length
+    ? { sessions: found, missing, levels: decoded.levels || {} }
+    : { error: 'none-found' };
 };
 
 // Resolve a file's entries, which carry more than an id. Try the id first, then

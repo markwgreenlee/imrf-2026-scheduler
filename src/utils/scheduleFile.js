@@ -1,6 +1,7 @@
 import conference from '../config/conference';
 
-const FORMAT = 1;
+// 1 held id, day and title. 2 adds the level and note.
+const FORMAT = 2;
 
 // A schedule as a file: the durable counterpart to the QR code.
 //
@@ -9,12 +10,19 @@ const FORMAT = 1;
 // matters because ids are not permanent — the ECVP poster codes were renumbered
 // mid-August 2026 — and a backup that stops loading when the programme is
 // re-exported is not a backup.
-export const buildScheduleFile = (sessions) => JSON.stringify({
+export const buildScheduleFile = (sessions, marks) => JSON.stringify({
   app: conference.shareTag,
   format: FORMAT,
   exported: new Date().toISOString(),
   count: sessions.length,
-  selection: sessions.map(s => ({ id: s.id, day: s.day, title: s.title })),
+  // Unlike the QR, a file is your own backup, so it keeps the notes too.
+  selection: sessions.map(s => {
+    const mark = (marks && marks[s.id]) || {};
+    const entry = { id: s.id, day: s.day, title: s.title };
+    if (mark.level) entry.level = mark.level;
+    if (mark.note) entry.note = mark.note;
+    return entry;
+  }),
 }, null, 2);
 
 // -> { entries } on success, { error, conference? } otherwise. The error names

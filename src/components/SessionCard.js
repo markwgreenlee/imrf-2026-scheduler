@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { kindName } from '../utils/filters';
 
-const SessionCard = ({ session, isSelected }) => {
+const SessionCard = ({ session, isSelected, mark }) => {
   const authors = Array.isArray(session.authors)
     ? session.authors.join(', ')
     : session.authors;
@@ -36,6 +36,7 @@ const SessionCard = ({ session, isSelected }) => {
       ) : null}
 
       <Text style={styles.title} numberOfLines={3}>
+        {mark && mark.marker ? <Text style={styles.marker}>{mark.marker}{'  '}</Text> : null}
         {session.kind === 'poster' && session.talk_number
           ? <Text style={styles.posterId}>{session.id}{'  '}</Text>
           : null}
@@ -50,6 +51,10 @@ const SessionCard = ({ session, isSelected }) => {
         <Text style={styles.abstract} numberOfLines={2}>
           {session.abstract}
         </Text>
+      ) : null}
+
+      {mark && mark.note ? (
+        <Text style={styles.note} numberOfLines={1}>🗒  {mark.note}</Text>
       ) : null}
 
       <View style={styles.footer}>
@@ -71,6 +76,16 @@ const SessionCard = ({ session, isSelected }) => {
 };
 
 const styles = StyleSheet.create({
+  marker: {
+    color: '#1d4ed8',
+    fontWeight: '700',
+  },
+  note: {
+    fontSize: 11,
+    color: '#1d4ed8',
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,

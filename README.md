@@ -175,6 +175,31 @@ thing — a list of presentations over the detail card — so they share it, and
 replaces what the card shows rather than stacking another layer. That means author → paper →
 session → another paper walks indefinitely without a pile of sheets to dismiss.
 
+### Priorities and notes
+
+Every presentation you add starts at **Interested**. You can promote it to **Maybe** or
+**Must-see**, and write a note against it, from the detail card. The Schedule screen gains a Level
+filter row beside Day and Type, a marker on each card (★ must-see, ○ maybe), and the first line of
+any note. The calendar export follows the level filter the same way it follows the day filter.
+
+Adding something gives it the *weakest* claim deliberately. A level only tells you anything if the
+strong one has to be earned — a schedule where everything is must-see says exactly as much as a
+schedule with no levels at all.
+
+Levels and notes live in a separate `marks` map (`src/utils/marks.js`), not inside the selection.
+Six screens read `selectedSessions` as a plain list and none of them need to know about levels, so
+reshaping that list would have meant touching all six to gain nothing. Only departures from the
+default are stored, so an untouched schedule costs nothing and an older one needs no migration.
+
+**Notes never leave the device except in a file you save.** A QR code is readable by anyone who can
+see your screen, so it carries the selection and the levels but never the notes. A saved file
+carries everything, because it is your own backup. The `.ics` carries neither. Each of those is
+asserted in the tests rather than left to inspection.
+
+A shared link is format 2 and may suffix an id with its level (`M1AM8!m`); the default level adds no
+characters, so the common case costs nothing. Format 1 links still load, with everything at the
+default.
+
 ### Saving a schedule as a file
 
 **Settings → Save as a file** writes your selection as JSON; **Load a saved file** reads one back.

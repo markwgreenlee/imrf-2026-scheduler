@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { getItem, setItem } from '../utils/storage';
 import imrfData from '../../assets/imrf-data.json';
 import {
@@ -11,6 +11,7 @@ import { decodeScheduleFile } from '../utils/scheduleFile';
 import { effectiveKind } from '../utils/filters';
 import { buildAuthorIndex } from '../utils/authors';
 import { buildBlocks } from '../utils/blocks';
+import { withMark, withoutMark, sanitiseMarks, markFor } from '../utils/marks';
 
 export const DataContext = createContext();
 
@@ -46,6 +47,13 @@ export const DataProvider = ({ children }) => {
   const [pendingImport, setPendingImport] = useState(null);
   // Lead time for calendar reminders, in minutes; 0 means no alarm.
   const [reminderMinutes, setReminderMinutes] = useState(10);
+  // id -> { level, note }, holding only what departs from the default.
+  const [marks, setMarks] = useState({});
+  // Saving must not begin until the stored values have been read back. The
+  // save effects run on mount with their empty initial state, which would
+  // otherwise overwrite storage before the asynchronous load has finished
+  // reading it — silently wiping a schedule on every start.
+  const hydrated = useRef(false);
 
   // Load data
   useEffect(() => {
@@ -62,6 +70,11 @@ export const DataProvider = ({ children }) => {
 
         // Arriving via a shared link: hold the selection for confirmation
         // rather than applying it, since import can overwrite a schedule.
+        const savedMarks = await getItem('marks');
+        if (savedMarks) {
+          try { setMarks(sanitiseMarks(JSON.parse(savedMarks))); } catch (_) {}
+        }
+
         const savedReminder = await getItem('reminderMinutes');
         if (savedReminder !== null) {
           const parsed = Number(savedReminder);
@@ -76,6 +89,7 @@ export const DataProvider = ({ children }) => {
       } catch (error) {
         console.error('Error loading data:', error);
       } finally {
+        hydrated.current = true;
         setIsLoading(false);
       }
     };
@@ -85,26 +99,43 @@ export const DataProvider = ({ children }) => {
 
   // Save selected sessions when they change
   useEffect(() => {
+    if (!hydrated.current) return;
     setItem('selectedSessions', JSON.stringify(selectedSessions));
   }, [selectedSessions]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    setItem('marks', JSON.stringify(marks));
+  }, [marks]);
 
   const toggleSession = useCallback((session) => {
     setSelectedSessions(prev => {
       const exists = prev.some(s => s.id === session.id);
       if (exists) {
+        // Dropping a presentation drops what was said about it.
+        setMarks(m => withoutMark(m, session.id));
         return prev.filter(s => s.id !== session.id);
-      } else {
-        return [...prev, session];
       }
+      return [...prev, session];
     });
   }, []);
 
   const removeSession = useCallback((sessionId) => {
     setSelectedSessions(prev => prev.filter(s => s.id !== sessionId));
+    setMarks(m => withoutMark(m, sessionId));
   }, []);
 
   const clearAll = useCallback(() => {
     setSelectedSessions([]);
+    setMarks({});
+  }, []);
+
+  const setLevel = useCallback((id, level) => {
+    setMarks(m => withMark(m, id, { level }));
+  }, []);
+
+  const setNote = useCallback((id, note) => {
+    setMarks(m => withMark(m, id, { note }));
   }, []);
 
   // 'merge' keeps what is already there and adds what is new; 'replace' makes
@@ -112,6 +143,18 @@ export const DataProvider = ({ children }) => {
   const applyImport = useCallback((mode) => {
     const incoming = pendingImport && pendingImport.sessions;
     if (!incoming) return;
+
+    // Levels and notes that came with the import. A QR carries levels only; a
+    // file carries both.
+    const arriving = sanitiseMarks(pendingImport.marks || {});
+    const levels = pendingImport.levels || {};
+    for (const [id, level] of Object.entries(levels)) {
+      if (!arriving[id]) arriving[id] = { level, note: '' };
+    }
+    setMarks(prev => {
+      const base = mode === 'replace' ? {} : { ...prev };
+      return { ...base, ...arriving };
+    });
     setSelectedSessions(current => {
       if (mode === 'replace') return incoming;
       const have = new Set(current.map(s => s.id));
@@ -142,7 +185,21 @@ export const DataProvider = ({ children }) => {
       return;
     }
     const { found, missing } = resolveEntries(decoded.entries, allSessions);
-    setPendingImport(found.length ? { sessions: found, missing } : { error: 'none-found' });
+    if (!found.length) { setPendingImport({ error: 'none-found' }); return; }
+
+    // Map what the file said onto the ids this programme actually uses, which
+    // may differ if the entry was matched by title after a renumbering.
+    const byOldId = new Map();
+    decoded.entries.forEach((entry, i) => byOldId.set(entry, i));
+    const arriving = {};
+    for (const entry of decoded.entries) {
+      if (!entry.level && !entry.note) continue;
+      const match = found.find(s =>
+        s.id === entry.id ||
+        (`${s.day}|${(s.title || '').toLowerCase()}` === `${entry.day}|${(entry.title || '').toLowerCase()}`));
+      if (match) arriving[match.id] = { level: entry.level, note: entry.note };
+    }
+    setPendingImport({ sessions: found, missing, marks: arriving });
   }, [allSessions]);
 
   // One pass over the programme, reused by every detail card.
@@ -204,6 +261,10 @@ export const DataProvider = ({ children }) => {
         dismissImport,
         receiveSharePayload,
         receiveScheduleFile,
+        marks,
+        markFor: (id) => markFor(marks, id),
+        setLevel,
+        setNote,
         reminderMinutes,
         changeReminderMinutes,
       }}

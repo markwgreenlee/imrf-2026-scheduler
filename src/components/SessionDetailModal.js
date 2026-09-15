@@ -1,9 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Modal,
   View,
   Text,
   ScrollView,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
@@ -12,15 +13,31 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { DataContext } from '../context/DataContext';
 import { lookupAuthor, hasOtherWork } from '../utils/authors';
 import PresentationSheet from './PresentationSheet';
+import { LEVELS, levelLabel, levelMark, markFor } from '../utils/marks';
 import { kindName } from '../utils/filters';
 
 // onNavigate lets a tapped author lead to one of their other presentations by
 // replacing what this card is showing. Without it the author links are simply
 // not offered, so a screen that has not opted in cannot reach a dead end.
 const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate }) => {
-  const { authorIndex, blockIndex } = useContext(DataContext);
+  const { authorIndex, blockIndex, marks, setLevel, setNote } = useContext(DataContext);
   // One sheet, opened either for an author or for a session.
   const [sheet, setSheet] = useState(null);
+  // Typing is local; the note is committed on blur and when the card closes,
+  // so a keystroke does not reach storage.
+  const [draftNote, setDraftNote] = useState('');
+
+  const mark = markFor(marks, session ? session.id : null);
+  const currentNote = mark.note;
+
+  useEffect(() => {
+    setDraftNote(currentNote);
+    // Re-read when the card switches to another presentation.
+  }, [session && session.id]);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  const saveNote = () => {
+    if (session && draftNote !== currentNote) setNote(session.id, draftNote);
+  };
   if (!session) return null;
 
   const authorList = Array.isArray(session.authors) ? session.authors : [];
@@ -88,7 +105,7 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <TouchableOpacity onPress={() => { saveNote(); onClose(); }} style={styles.closeBtn}>
             <Icon name="close" size={24} color="#555" />
           </TouchableOpacity>
           <View style={styles.badges}>
@@ -212,6 +229,42 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>Abstract</Text>
               <Text style={styles.abstract}>{session.abstract}</Text>
+            </View>
+          ) : null}
+          {isSelected ? (
+            <View style={styles.markBox}>
+              <Text style={styles.sectionLabel}>How badly do you want to see this?</Text>
+              <View style={styles.levelRow}>
+                {LEVELS.map(level => (
+                  <TouchableOpacity
+                    key={level}
+                    style={[styles.levelChip, mark.level === level && styles.levelChipActive]}
+                    onPress={() => setLevel(session.id, level)}
+                  >
+                    <Text style={[
+                      styles.levelChipText,
+                      mark.level === level && styles.levelChipTextActive,
+                    ]}>
+                      {levelMark(level) ? `${levelMark(level)} ` : ''}{levelLabel(level)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.sectionLabel}>Your note</Text>
+              <TextInput
+                style={styles.noteInput}
+                placeholder="A question to ask, who to find, anything worth remembering"
+                placeholderTextColor="#aaa"
+                value={draftNote}
+                onChangeText={setDraftNote}
+                onBlur={saveNote}
+                multiline
+              />
+              <Text style={styles.markHint}>
+                Notes stay on this device and in a saved file. They are never put in a QR code,
+                which anyone who can see your screen can read.
+              </Text>
             </View>
           ) : null}
         </ScrollView>
@@ -339,6 +392,49 @@ const styles = StyleSheet.create({
   sessionTitleLink: {
     color: '#1a5fd1',
     textDecorationLine: 'underline',
+  },
+  markBox: {
+    marginTop: 18,
+    backgroundColor: '#f7f9fc',
+    borderRadius: 10,
+    padding: 12,
+  },
+  levelRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 16,
+  },
+  levelChip: {
+    backgroundColor: '#fff',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  levelChipActive: {
+    backgroundColor: '#dbeafe',
+    borderColor: '#3b82f6',
+  },
+  levelChipText: { fontSize: 12, color: '#444', fontWeight: '600' },
+  levelChipTextActive: { color: '#1d4ed8', fontWeight: '700' },
+  noteInput: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    padding: 10,
+    fontSize: 13,
+    color: '#333',
+    minHeight: 64,
+  },
+  markHint: {
+    fontSize: 10,
+    color: '#999',
+    lineHeight: 14,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   authorLink: {
     color: '#1a5fd1',
