@@ -33,6 +33,7 @@ import { DataProvider } from './src/context/DataContext';
 import InstallPrompt from './src/components/InstallPrompt';
 import ImportPrompt from './src/components/ImportPrompt';
 import StartingSoon from './src/components/StartingSoon';
+import UpdatePrompt from './src/components/UpdatePrompt';
 
 const Tab = createBottomTabNavigator();
 
@@ -60,6 +61,7 @@ export default function App() {
         <InstallPrompt />
         <ImportPrompt />
         <StartingSoon />
+        <UpdatePrompt />
         <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({

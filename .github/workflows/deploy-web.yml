@@ -34,6 +34,17 @@ jobs:
         run: python3 scripts/validate_data.py
       - run: npx expo export -p web
       - run: sed -i 's|src="/_expo/|src="/imrf-2026-scheduler/_expo/|g' dist/index.html
+      # The worker's cache name carries the app version, so each release gets a
+      # fresh cache and the previous one is dropped on activation. Hard-coding
+      # it in public/sw.js meant it drifted years out of date.
+      - name: Stamp the service worker with the app version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          sed -i "s|__APP_VERSION__|$VERSION|g" dist/sw.js
+          if grep -q "__APP_VERSION__" dist/sw.js; then
+            echo "version placeholder was not replaced"; exit 1
+          fi
+          echo "service worker stamped with $VERSION"
       - name: Patch index.html for Safari PWA icon and name
         run: |
           python3 - <<'PYEOF'
