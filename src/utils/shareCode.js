@@ -105,3 +105,25 @@ export const buildPendingImport = (payload, sessions) => {
   const { found, missing } = resolveIds(decoded.ids, sessions);
   return found.length ? { sessions: found, missing } : { error: 'none-found' };
 };
+
+// Resolve a file's entries, which carry more than an id. Try the id first, then
+// day and title — so a schedule saved before a renumbering still loads.
+export const resolveEntries = (entries, sessions) => {
+  const byId = new Map(sessions.map(s => [s.id, s]));
+  const byTitle = new Map(
+    sessions.map(s => [`${s.day}|${(s.title || '').toLowerCase()}`, s])
+  );
+  const found = [];
+  const missing = [];
+  const seen = new Set();
+  for (const entry of entries) {
+    const match =
+      byId.get(entry.id) ||
+      byTitle.get(`${entry.day}|${(entry.title || '').toLowerCase()}`);
+    if (!match) { missing.push(entry.id || entry.title); continue; }
+    if (seen.has(match.id)) continue;
+    seen.add(match.id);
+    found.push(match);
+  }
+  return { found, missing };
+};
