@@ -11,6 +11,7 @@ import { decodeScheduleFile } from '../utils/scheduleFile';
 import { effectiveKind } from '../utils/filters';
 import { buildAuthorIndex } from '../utils/authors';
 import { buildBlocks } from '../utils/blocks';
+import { searchableText } from '../utils/searchFields';
 import { withMark, withoutMark, sanitiseMarks, markFor } from '../utils/marks';
 
 export const DataContext = createContext();
@@ -215,21 +216,16 @@ export const DataProvider = ({ children }) => {
     return index;
   }, [allSessions]);
 
-  const searchSessions = useCallback((query, day = '', kind = '') => {
+  // `field` is a SEARCH_FIELDS id, or '' for the whole record. The matching
+  // itself is unchanged: one case-insensitive substring, so a phrase stays a
+  // phrase and nothing anyone already relies on behaves differently.
+  const searchSessions = useCallback((query, day = '', kind = '', field = '') => {
     let results = allSessions;
 
     if (query.trim()) {
       const lowerQuery = query.toLowerCase();
       results = results.filter(s =>
-        // Board code / talk number, so "M1AM8" finds that poster directly.
-        s.id.toLowerCase().includes(lowerQuery) ||
-        s.title.toLowerCase().includes(lowerQuery) ||
-        s.authors.join(' ').toLowerCase().includes(lowerQuery) ||
-        s.abstract.toLowerCase().includes(lowerQuery) ||
-        s.session_title.toLowerCase().includes(lowerQuery) ||
-        s.affiliations.toLowerCase().includes(lowerQuery) ||
-        (s.bio || '').toLowerCase().includes(lowerQuery) ||
-        (s.organizer || '').toLowerCase().includes(lowerQuery)
+        searchableText(s, field).toLowerCase().includes(lowerQuery)
       );
     }
 

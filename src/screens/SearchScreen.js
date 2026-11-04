@@ -13,20 +13,22 @@ import { DataContext } from '../context/DataContext';
 import SessionCard from '../components/SessionCard';
 import SessionDetailModal from '../components/SessionDetailModal';
 import { daysInOrder, kindsInOrder, kindLabel } from '../utils/filters';
+import { SEARCH_FIELDS, fieldPlaceholder, fieldLabel } from '../utils/searchFields';
 
 const SearchScreen = () => {
   const { allSessions, selectedSessions, isLoading, toggleSession, searchSessions } = useContext(DataContext);
   const [query, setQuery] = useState('');
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedKind, setSelectedKind] = useState('');
+  const [selectedField, setSelectedField] = useState('');
   const [detailSession, setDetailSession] = useState(null);
 
   const DAYS  = useMemo(() => daysInOrder(allSessions), [allSessions]);
   const KINDS = useMemo(() => kindsInOrder(allSessions), [allSessions]);
 
   const results = useMemo(() => {
-    return searchSessions(query, selectedDay, selectedKind);
-  }, [query, selectedDay, selectedKind, searchSessions]);
+    return searchSessions(query, selectedDay, selectedKind, selectedField);
+  }, [query, selectedDay, selectedKind, selectedField, searchSessions]);
 
   const toggleDay = (day) => setSelectedDay(prev => prev === day ? '' : day);
   const toggleKind = (kind) => setSelectedKind(prev => prev === kind ? '' : kind);
@@ -44,7 +46,7 @@ const SearchScreen = () => {
       <View style={styles.searchBox}>
         <TextInput
           style={styles.input}
-          placeholder="Search title, authors, abstract…"
+          placeholder={fieldPlaceholder(selectedField)}
           placeholderTextColor="#999"
           value={query}
           onChangeText={setQuery}
@@ -63,6 +65,26 @@ const SearchScreen = () => {
             >
               <Text style={[styles.chipText, selectedDay === day && styles.chipTextActive]}>
                 {day.slice(0, 3)}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Which part of a record the query is tested against. 'All' is the
+          first chip and the default, so clearing a choice and searching
+          everything are the same gesture as on the other two rows. */}
+      <View style={styles.filtersRow}>
+        <Text style={styles.filterLabel}>Field:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipScroll}>
+          {SEARCH_FIELDS.map(f => (
+            <TouchableOpacity
+              key={f.id || 'all'}
+              style={[styles.chip, selectedField === f.id && styles.chipActive]}
+              onPress={() => setSelectedField(f.id)}
+            >
+              <Text style={[styles.chipText, selectedField === f.id && styles.chipTextActive]}>
+                {f.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -94,7 +116,11 @@ const SearchScreen = () => {
 
       {results.length === 0 ? (
         <View style={styles.centered}>
-          <Text style={styles.emptyText}>No presentations found</Text>
+          <Text style={styles.emptyText}>
+            {selectedField
+              ? `No match in ${fieldLabel(selectedField).toLowerCase()} — try All`
+              : 'No presentations found'}
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -157,7 +183,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#555',
     marginRight: 8,
-    width: 38,
+    width: 46,
   },
   chipScroll: {
     flexDirection: 'row',
