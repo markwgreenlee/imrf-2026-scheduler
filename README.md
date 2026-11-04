@@ -335,6 +335,11 @@ Each entry in `assets/imrf-data.json` has: `id`, `kind` (`keynote` / `symposium_
 
 ## Version History
 
+**v1.8.0** (2026-11-04)
+- **Search can be restricted to one field.** A Field row joins Day and Type: All, Title, Author, Abstract, Affiliation, Session — so an author search returns people rather than every abstract that happens to mention the name, and an affiliation search finds a lab's whole output
+- All remains the default and is unchanged, still searching the board code, title, authors, abstract, session name, affiliation, and the organiser and biography that symposium records carry. Matching is still one case-insensitive substring, so a phrase stays a phrase
+- `src/utils/searchFields.js` is shared byte-identically with the VSS and ECVP builds
+
 **v1.7.0** (2026-11-04)
 - **Icons now render.** Every icon in the deployed web app was drawing as an empty box: the app is served from `/imrf-2026-scheduler/`, but the icon fonts were fetched at runtime from `/assets/...` at the domain root, where they 404. The base path was set as `expo.web.baseUrl` in app.json, which Expo does not read — it reads `expo.experiments.baseUrl`
 - **Home screen** — the app now opens on a front door: meeting, venue and dates, today's day number, what is happening now with how many of your starred items are in it, your own next starred item with its room, and cards through to Program, My Schedule, Search and Venue Map. Before the meeting opens the status cards become a countdown and a prompt to build a schedule; after it closes, a note that the schedule is still exportable
