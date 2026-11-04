@@ -335,6 +335,16 @@ Each entry in `assets/imrf-data.json` has: `id`, `kind` (`keynote` / `symposium_
 
 ## Version History
 
+**v1.7.0** (2026-11-04)
+- **Icons now render.** Every icon in the deployed web app was drawing as an empty box: the app is served from `/imrf-2026-scheduler/`, but the icon fonts were fetched at runtime from `/assets/...` at the domain root, where they 404. The base path was set as `expo.web.baseUrl` in app.json, which Expo does not read — it reads `expo.experiments.baseUrl`
+- **Home screen** — the app now opens on a front door: meeting, venue and dates, today's day number, what is happening now with how many of your starred items are in it, your own next starred item with its room, and cards through to Program, My Schedule, Search and Venue Map. Before the meeting opens the status cards become a countdown and a prompt to build a schedule; after it closes, a note that the schedule is still exportable
+- **Program screen** — a chosen day in start-time order, so parallel sessions sit side by side: time range, room, title, item count, kind badge, an orange edge and `N starred` chip for sessions holding your picks, a red edge and `Happening now` chip for what is running, a red line for where in the day you are, and hours when nothing is on drawn as gaps
+- **Session view** — tapping a session card opens its name, time, room and item count, then its contents. Where the programme times each presentation they read as a running order; where it does not, rows carry their position rather than repeating the session's start time down the page. Posters are grouped by topic with the board code in place of a time
+- **Venue Map** — every room in the programme with what is on there today; floor-plan images drop into `assets/floors/` and are listed in `conference.floors`, replacing the directory when present
+- Tab bar is now Home · Program · Search · Schedule · Settings; the **Now** tab is gone, its content folded into Home and the Program badges. Icons follow the set the VSS organisers suggested: a list for the programme, a star for the schedule, a flag for the venue
+- A running app now notices a new release: it asks for a service-worker update check whenever it returns to the foreground (at most once a minute), and offers a reload when a new build takes over
+- Meeting identity, venue, room labels, the brand colour and Home announcements moved into `src/config/conference.js`, so next year's build is a config edit. New `src/utils/program.js` and `src/utils/venue.js` are byte-identical to the VSS build, as the other utils are
+
 **v1.0.3** (2026-06-22)
 - Corrected a malformed organizer name in Symposium 5 ("Jahanian Najafabadi Amir Jahanian" → "Jahanian Najafabadi Amir"); the booklet duplicated the surname across a line break
 
