@@ -2,11 +2,36 @@ import React, { useState, useEffect } from 'react';
 
 // Register service worker for PWA offline support (web only)
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  let registration = null;
+  let lastCheck = 0;
+  // A resume costs one conditional request at most once a minute, which is
+  // nothing next to being stuck on a stale programme at the venue.
+  const CHECK_INTERVAL_MS = 60000;
+
+  const checkForUpdate = () => {
+    if (!registration) return;
+    const now = Date.now();
+    if (now - lastCheck < CHECK_INTERVAL_MS) return;
+    lastCheck = now;
+    registration.update().catch(() => {});
+  };
+
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/imrf-2026-scheduler/sw.js', { scope: '/imrf-2026-scheduler/' })
+      .then((reg) => {
+        registration = reg;
+        lastCheck = Date.now();
+      })
       .catch(() => {});
   });
+
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    });
+  }
+  window.addEventListener('focus', checkForUpdate);
 }
 
 // Umami Analytics (web only) — privacy-friendly, cookie-free
@@ -25,7 +50,9 @@ import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
-import NowScreen from './src/screens/NowScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import ProgramScreen from './src/screens/ProgramScreen';
+import VenueScreen from './src/screens/VenueScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import ScheduleScreen from './src/screens/ScheduleScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
@@ -64,12 +91,14 @@ export default function App() {
         <UpdatePrompt />
         <NavigationContainer>
           <Tab.Navigator
+            initialRouteName="Home"
             screenOptions={({ route }) => ({
               tabBarIcon: ({ color, size }) => {
                 let iconName;
-                if (route.name === 'Now') iconName = 'clock-outline';
+                if (route.name === 'Home') iconName = 'home-outline';
+                else if (route.name === 'Program') iconName = 'menu';
                 else if (route.name === 'Search') iconName = 'magnify';
-                else if (route.name === 'Schedule') iconName = 'calendar-check';
+                else if (route.name === 'Schedule') iconName = 'star-outline';
                 else if (route.name === 'Settings') iconName = 'cog';
                 return <Icon name={iconName} size={size} color={color} />;
               },
@@ -86,11 +115,19 @@ export default function App() {
             })}
           >
             <Tab.Screen
-              name="Now"
-              component={NowScreen}
+              name="Home"
+              component={HomeScreen}
               options={{
-                title: "What's On Now",
-                tabBarLabel: 'Now',
+                headerShown: false,
+                tabBarLabel: 'Home',
+              }}
+            />
+            <Tab.Screen
+              name="Program"
+              component={ProgramScreen}
+              options={{
+                title: 'Program',
+                tabBarLabel: 'Program',
               }}
             />
             <Tab.Screen
@@ -115,6 +152,18 @@ export default function App() {
               options={{
                 title: 'Settings',
                 tabBarLabel: 'Settings',
+              }}
+            />
+            {/* Reached from Home rather than the tab bar, which holds five
+                tabs already. Registering it here is what lets Home navigate
+                to it without adding a second navigator. */}
+            <Tab.Screen
+              name="Venue"
+              component={VenueScreen}
+              options={{
+                title: 'Venue Map',
+                tabBarButton: () => null,
+                tabBarItemStyle: { display: 'none' },
               }}
             />
           </Tab.Navigator>

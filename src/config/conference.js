@@ -8,6 +8,45 @@
  */
 
 const conference = {
+  // --- Meeting identity ----------------------------------------------------
+  // What the Home screen says above the fold. Kept here rather than in the
+  // screen so that next year's build is a config edit, not a code edit.
+  meetingName: 'IMRF 2026',
+  societyName: 'International Multisensory Research Forum',
+  // Left empty until confirmed: the programme data does not carry it, and a
+  // wrong ordinal is worse than none. Home omits the line while it is blank.
+  meetingNumber: '',
+  // Unknown here; the Venue screen falls back to the city while it is blank.
+  venueName: '',
+  cityLong: 'Genova, Italy',
+  dateRange: 'June 24 – 27, 2026',
+  firstDate: '2026-06-24',
+  lastDate: '2026-06-27',
+  // Brand colour, used by every screen rather than hard-coded in each.
+  accentColor: '#186078',
+
+  // --- Venue ---------------------------------------------------------------
+  // Keys must match the `room` values in the data exactly — that field is an
+  // identifier, so a room missing here shows without a location rather than
+  // breaking. `location` is the part only the venue knows.
+  rooms: {
+    'SCIROCCO ROOM': { label: 'Scirocco Room', location: '' },
+    'PONENTE ROOM': { label: 'Ponente Room', location: '' },
+    'ALISEO ROOM': { label: 'Aliseo Room', location: '' },
+    'ZEFIRO ROOM': { label: 'Zefiro Room', location: '' },
+    'HALL': { label: 'Poster hall', location: '' },
+  },
+  // Floor plans, in order. Metro cannot resolve a require() built at runtime,
+  // so each image is named here:
+  //   { id: 'level-1', name: 'Level 1',
+  //     image: require('../../assets/floors/level-1.png') }
+  // While this is empty the Venue screen shows the room directory instead.
+  floors: [],
+  // Late changes worth interrupting the Home screen for — a moved room, a
+  // cancelled session. Shown as an amber banner, newest first:
+  //   { id: 'room-change-1', title: 'Room change', body: '…' }
+  announcements: [],
+
   // --- Sharing -------------------------------------------------------------
   // Tags a share link so a code from a sibling app is rejected with a message
   // rather than half-read. Must be unique across the three apps.
