@@ -233,7 +233,7 @@ const SessionDetailModal = ({ session, isSelected, onToggle, onClose, onNavigate
           ) : null}
           {isSelected ? (
             <View style={styles.markBox}>
-              <Text style={styles.sectionLabel}>How badly do you want to see this?</Text>
+              <Text style={styles.sectionLabel}>How important is this presentation?</Text>
               <View style={styles.levelRow}>
                 {LEVELS.map(level => (
                   <TouchableOpacity

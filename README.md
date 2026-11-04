@@ -177,9 +177,9 @@ session → another paper walks indefinitely without a pile of sheets to dismiss
 
 ### Priorities and notes
 
-Every presentation you add starts at **Interested**. You can promote it to **Maybe** or
-**Must-see**, and write a note against it, from the detail card. The Schedule screen gains a Level
-filter row beside Day and Type, a marker on each card (★ must-see, ○ maybe), and the first line of
+Every presentation you add starts at **Interesting**. You can promote it to **Important** or
+**Must see**, and write a note against it, from the detail card. The Schedule screen gains a Level
+filter row beside Day and Type, a marker on each card (★ must see, ○ important), and the first line of
 any note. The calendar export follows the level filter the same way it follows the day filter.
 
 Adding something gives it the *weakest* claim deliberately. A level only tells you anything if the

@@ -1,5 +1,5 @@
-// What you have said about a presentation you added: how badly you want to see
-// it, and anything you wrote down.
+// What you have said about a presentation you added: how important it is, and
+// anything you wrote down.
 //
 // Kept beside the selection rather than inside it. Six screens read
 // selectedSessions as a plain list of presentations, and none of them need to
@@ -14,14 +14,17 @@ export const INTERESTED = 'interested';
 export const LEVELS = [MUST, MAYBE, INTERESTED];
 
 // Adding something means the weakest claim. A level only tells you anything if
-// the strong one has to be earned — a schedule where everything is must-see
+// the strong one has to be earned — a schedule where everything is a must-see
 // says exactly as much as a schedule with no levels at all.
 export const DEFAULT_LEVEL = INTERESTED;
 
+// The ids above are storage keys, not labels: they are written into saved
+// schedules and suffixed onto shared links, so they must not change when the
+// wording does. MAYBE reads as 'Important' and is the middle rung.
 const LABELS = {
-  [MUST]: 'Must-see',
-  [MAYBE]: 'Maybe',
-  [INTERESTED]: 'Interested',
+  [MUST]: 'Must see',
+  [MAYBE]: 'Important',
+  [INTERESTED]: 'Interesting',
 };
 
 // Carried in a shared link, where every character costs. An unsuffixed id is
